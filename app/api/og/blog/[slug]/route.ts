@@ -1,4 +1,3 @@
-import { ImageResponse } from 'next/og'
 import { getPostBySlug } from '@/lib/db-actions'
 
 export const runtime = 'edge'
@@ -14,137 +13,107 @@ export async function GET(request: Request, { params }: { params: { slug: string
     const title = post.title
     const description = post.excerpt || post.content.substring(0, 150)
     const author = post.author || 'Dr. Ferdinand Ibu Ogbaji'
-    const publishedDate = new Date(post.createdAt).toLocaleDateString('en-US', {
+    const publishedDate = new Date(post.createdAt || new Date()).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
     })
 
-    return new ImageResponse(
-      (
-        <div
-          style={{
-            height: '100%',
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            justifyContent: 'space-between',
-            backgroundColor: '#fffbeb',
-            backgroundImage: 'linear-gradient(135deg, #fffbeb 0%, #fed7aa 100%)',
-            padding: '60px',
-            fontFamily: 'system-ui',
-          }}
-        >
-          {/* Header */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginBottom: 40,
-            }}
-          >
-            <div
-              style={{
-                width: 60,
-                height: 60,
-                backgroundColor: '#d97706',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 30,
-                marginRight: 20,
-              }}
-            >
-              ✨
-            </div>
-            <div
-              style={{
-                fontSize: 28,
-                fontWeight: 'bold',
-                color: '#92400e',
-              }}
-            >
-              TRISKIDEAS
-            </div>
-          </div>
-
-          {/* Content */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            {/* Title */}
-            <div
-              style={{
-                fontSize: 54,
-                fontWeight: 'bold',
-                color: '#92400e',
-                lineHeight: 1.1,
-                marginBottom: 30,
-                maxWidth: '100%',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
-            >
-              {title.length > 80 ? title.substring(0, 77) + '...' : title}
-            </div>
-
-            {/* Description */}
-            <div
-              style={{
-                fontSize: 24,
-                color: '#a16207',
-                lineHeight: 1.4,
-                marginBottom: 40,
-                maxWidth: '90%',
-              }}
-            >
-              {description.length > 200 ? description.substring(0, 197) + '...' : description}
-            </div>
-
-            {/* Category Badge */}
-            {post.category && (
-              <div
-                style={{
-                  display: 'inline-flex',
-                  backgroundColor: '#d97706',
-                  color: 'white',
-                  padding: '8px 16px',
-                  borderRadius: '20px',
-                  fontSize: 16,
-                  fontWeight: 'bold',
-                  marginBottom: 20,
-                  width: 'fit-content',
-                }}
-              >
-                {post.category}
-              </div>
-            )}
-          </div>
-
-          {/* Footer */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              width: '100%',
-              fontSize: 18,
-              color: '#a16207',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <div style={{ marginRight: 20 }}>By {author}</div>
-              <div>{publishedDate}</div>
-            </div>
-            <div style={{ fontStyle: 'italic' }}>The Mind's Fruit</div>
-          </div>
+    const html = `
+      <div style="
+        height: 100vh;
+        width: 100vw;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: space-between;
+        background: linear-gradient(135deg, #fffbeb 0%, #fed7aa 100%);
+        padding: 60px;
+        font-family: system-ui;
+      ">
+        <div style="
+          display: flex;
+          align-items: center;
+          margin-bottom: 40px;
+        ">
+          <div style="
+            width: 60px;
+            height: 60px;
+            background-color: #d97706;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin-right: 20px;
+          ">✨</div>
+          <div style="
+            font-size: 28px;
+            font-weight: bold;
+            color: #92400e;
+          ">TRISKIDEAS</div>
         </div>
-      ),
-      {
-        width: 1200,
-        height: 630,
-      }
-    )
+
+        <div style="
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        ">
+          <div style="
+            font-size: 54px;
+            font-weight: bold;
+            color: #92400e;
+            line-height: 1.1;
+            margin-bottom: 30px;
+            max-width: 100%;
+          ">${title.length > 80 ? title.substring(0, 77) + '...' : title}</div>
+
+          <div style="
+            font-size: 24px;
+            color: #a16207;
+            line-height: 1.4;
+            margin-bottom: 40px;
+            max-width: 90%;
+          ">${description.length > 200 ? description.substring(0, 197) + '...' : description}</div>
+
+          ${post.category ? `
+          <div style="
+            display: inline-flex;
+            background-color: #d97706;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            width: fit-content;
+          ">${post.category}</div>
+          ` : ''}
+        </div>
+
+        <div style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+          font-size: 18px;
+          color: #a16207;
+        ">
+          <div style="display: flex; align-items: center;">
+            <div style="margin-right: 20px;">By ${author}</div>
+            <div>${publishedDate}</div>
+          </div>
+          <div style="font-style: italic;">The Mind's Fruit</div>
+        </div>
+      </div>
+    `
+
+    return new Response(html, {
+      headers: {
+        'Content-Type': 'text/html',
+      },
+    })
   } catch (error) {
     console.error('Error generating OG image:', error)
     return new Response('Error generating image', { status: 500 })
