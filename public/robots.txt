@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Disallow admin areas
+User-agent: *
+Disallow: /admin/
+Disallow: /api/
+Disallow: /setup/
+
+# Allow specific API endpoints for SEO
+Allow: /api/sitemap
+Allow: /api/rss
+
+# Sitemap
+Sitemap: https://triskideas.com/sitemap.xml
