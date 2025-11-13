@@ -1,6 +1,17 @@
 import { pgTable, serial, text, timestamp, boolean, varchar, integer, decimal, pgEnum } from "drizzle-orm/pg-core"
 import { createInsertSchema } from "drizzle-zod"
 
+export const adminUsers = pgTable("admin_users", {
+  id: serial("id").primaryKey(),
+  username: varchar("username", { length: 100 }).notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  email: varchar("email", { length: 255 }).unique(),
+  fullName: varchar("full_name", { length: 255 }),
+  active: boolean("active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+})
+
 export const posts = pgTable("posts", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
@@ -145,6 +156,8 @@ export const siteSettings = pgTable("site_settings", {
   updatedAt: timestamp("updated_at").defaultNow(),
 })
 
+export type AdminUser = typeof adminUsers.$inferSelect
+export type InsertAdminUser = typeof adminUsers.$inferInsert
 export type Post = typeof posts.$inferSelect
 export type InsertPost = typeof posts.$inferInsert
 export type Subscriber = typeof subscribers.$inferSelect
@@ -168,6 +181,7 @@ export type InsertNewsletterPopup = typeof newsletterPopups.$inferInsert
 export type SiteSetting = typeof siteSettings.$inferSelect
 export type InsertSiteSetting = typeof siteSettings.$inferInsert
 
+export const insertAdminUserSchema = createInsertSchema(adminUsers)
 export const insertPostSchema = createInsertSchema(posts)
 export const insertSubscriberSchema = createInsertSchema(subscribers)
 export const insertCategorySchema = createInsertSchema(categories)

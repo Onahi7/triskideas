@@ -8,7 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest"
+    "test": "jest",
+    "seed:admin": "tsx scripts/seed-admin.ts",
+    "db:migrate": "psql $DATABASE_URL -f scripts/add-admin-table.sql"
   },
   "dependencies": {
     "@aws-sdk/client-rds-data": "latest",
@@ -41,10 +43,12 @@
     "@vercel/analytics": "latest",
     "@vercel/postgres": "latest",
     "@xata.io/client": "latest",
+    "bcryptjs": "^3.0.3",
     "better-sqlite3": "latest",
     "bun-types": "latest",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotenv": "^17.2.3",
     "drizzle-orm": "latest",
     "drizzle-zod": "latest",
     "expo-sqlite": "latest",
@@ -77,6 +81,7 @@
     "jest": "^26.6.3",
     "postcss": "^8.5",
     "tailwindcss": "4.1.17",
+    "tsx": "^4.20.6",
     "typescript": "^5"
   }
 }
