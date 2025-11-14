@@ -1,5 +1,3 @@
-"use server"
-
 import { db } from "@/lib/db"
 import { users, userSessions, type User } from "@/lib/schema"
 import { eq, and, gt } from "drizzle-orm"
