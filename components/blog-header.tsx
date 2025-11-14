@@ -45,9 +45,6 @@ export function BlogHeader() {
           <Link href="/contact" className="text-amber-900 hover:text-amber-700 transition font-medium">
             Contact
           </Link>
-          <Link href="/admin">
-            <Button className="bg-amber-700 hover:bg-amber-800 text-white">Admin</Button>
-          </Link>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -103,9 +100,6 @@ export function BlogHeader() {
             onClick={() => setMobileMenuOpen(false)}
           >
             Contact
-          </Link>
-          <Link href="/admin" onClick={() => setMobileMenuOpen(false)}>
-            <Button className="w-full bg-amber-700 hover:bg-amber-800 text-white">Admin</Button>
           </Link>
         </nav>
       </motion.div>
