@@ -15,6 +15,28 @@ interface Post {
   publishedAt: Date | null
 }
 
+interface Series {
+  id: number
+  title: string
+  description: string
+  imageUrl: string | null
+  slug: string
+  publishedAt: Date | null
+  episodeCount?: number
+}
+
+interface Event {
+  id: number
+  title: string
+  description: string
+  imageUrl: string | null
+  slug: string
+  startDate: Date
+  eventType: string
+  location: string | null
+  published: boolean
+}
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -181,6 +203,163 @@ function FeaturedPosts({ posts }: { posts: Post[] }) {
   )
 }
 
+function SeriesSection({ seriesList }: { seriesList: Series[] }) {
+  const featured = seriesList.slice(0, 3)
+
+  return (
+    <motion.section
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-100px" }}
+      variants={containerVariants}
+      className="max-w-6xl mx-auto px-4 py-20"
+    >
+      <motion.div variants={itemVariants} className="mb-12">
+        <h3 className="text-4xl font-bold text-amber-900 mb-4 text-center">Series</h3>
+        <p className="text-center text-gray-600 text-lg">Explore episodic content and deep dives</p>
+      </motion.div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {featured.length > 0 ? (
+          featured.map((serie, index) => (
+            <motion.div
+              key={serie.id}
+              variants={itemVariants}
+              className={index === 2 ? "hidden lg:block" : "block"}
+            >
+              <Link href={`/series/${serie.slug}`}>
+                <div className="group cursor-pointer h-full">
+                  <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 h-full flex flex-col">
+                    <div className="relative w-full overflow-hidden bg-gray-200">
+                      <div className="relative aspect-4/3">
+                        <Image
+                          src={serie.imageUrl || "/placeholder.svg"}
+                          alt={serie.title}
+                          fill
+                          sizes="(max-width: 1024px) 100vw, 33vw"
+                          className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                      </div>
+                      {serie.episodeCount !== undefined && (
+                        <div className="absolute top-4 right-4 bg-amber-700 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                          {serie.episodeCount} {serie.episodeCount === 1 ? 'Episode' : 'Episodes'}
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-8 flex flex-col grow">
+                      <h4 className="text-xl font-bold text-amber-900 mb-3 group-hover:text-amber-700 transition line-clamp-2">
+                        {serie.title}
+                      </h4>
+                      <p className="text-gray-600 mb-4 leading-relaxed grow line-clamp-3">{serie.description}</p>
+                      <div className="flex items-center justify-between pt-4 border-t border-amber-100 mt-auto">
+                        <span className="text-sm text-amber-700 font-medium">
+                          {serie.publishedAt
+                            ? new Date(serie.publishedAt).toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                              })
+                            : ""}
+                        </span>
+                        <span className="text-amber-700 font-semibold group-hover:translate-x-2 transition-transform">
+                          Explore →
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+          ))
+        ) : (
+          <motion.div variants={itemVariants} className="col-span-full text-center py-12">
+            <p className="text-gray-500 text-lg">Series coming soon!</p>
+          </motion.div>
+        )}
+      </div>
+    </motion.section>
+  )
+}
+
+function EventsSection({ eventsList }: { eventsList: Event[] }) {
+  const featured = eventsList.slice(0, 3)
+
+  return (
+    <motion.section
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-100px" }}
+      variants={containerVariants}
+      className="max-w-6xl mx-auto px-4 py-20"
+    >
+      <motion.div variants={itemVariants} className="mb-12">
+        <h3 className="text-4xl font-bold text-amber-900 mb-4 text-center">Upcoming Events</h3>
+        <p className="text-center text-gray-600 text-lg">Join our community gatherings and workshops</p>
+      </motion.div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {featured.length > 0 ? (
+          featured.map((event, index) => (
+            <motion.div
+              key={event.id}
+              variants={itemVariants}
+              className={index === 2 ? "hidden lg:block" : "block"}
+            >
+              <Link href={`/events/${event.slug}`}>
+                <div className="group cursor-pointer h-full">
+                  <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 h-full flex flex-col">
+                    <div className="relative w-full overflow-hidden bg-gray-200">
+                      <div className="relative aspect-4/3">
+                        <Image
+                          src={event.imageUrl || "/placeholder.svg"}
+                          alt={event.title}
+                          fill
+                          sizes="(max-width: 1024px) 100vw, 33vw"
+                          className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                      </div>
+                      <div className="absolute top-4 right-4 bg-amber-700 text-white px-3 py-1 rounded-full text-sm font-semibold capitalize">
+                        {event.eventType}
+                      </div>
+                    </div>
+                    <div className="p-8 flex flex-col grow">
+                      <h4 className="text-xl font-bold text-amber-900 mb-3 group-hover:text-amber-700 transition line-clamp-2">
+                        {event.title}
+                      </h4>
+                      <p className="text-gray-600 mb-4 leading-relaxed grow line-clamp-3">{event.description}</p>
+                      <div className="flex flex-col gap-2 pt-4 border-t border-amber-100 mt-auto">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-amber-700 font-medium">
+                            {new Date(event.startDate).toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            })}
+                          </span>
+                        </div>
+                        {event.location && (
+                          <span className="text-sm text-gray-600">📍 {event.location}</span>
+                        )}
+                        <span className="text-amber-700 font-semibold group-hover:translate-x-2 transition-transform self-end">
+                          Learn More →
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+          ))
+        ) : (
+          <motion.div variants={itemVariants} className="col-span-full text-center py-12">
+            <p className="text-gray-500 text-lg">Events coming soon!</p>
+          </motion.div>
+        )}
+      </div>
+    </motion.section>
+  )
+}
+
 function CTASection() {
   return (
     <motion.section
@@ -213,13 +392,17 @@ function HomePage({
   heroSubtitle, 
   heroDescription, 
   heroImage, 
-  featuredPosts 
+  featuredPosts,
+  seriesList,
+  eventsList
 }: { 
   heroTitle: string;
   heroSubtitle: string;
   heroDescription: string;
   heroImage: string;
   featuredPosts: Post[];
+  seriesList: Series[];
+  eventsList: Event[];
 }) {
   return (
     <>
@@ -246,6 +429,12 @@ function HomePage({
       {/* Featured Articles Section */}
       <FeaturedPosts posts={featuredPosts} />
 
+      {/* Series Section */}
+      <SeriesSection seriesList={seriesList} />
+
+      {/* Events Section */}
+      <EventsSection eventsList={eventsList} />
+
       {/* CTA Section */}
       <CTASection />
     </>
@@ -257,6 +446,8 @@ export const ClientHome = {
   HeroContent,
   HeroImage,
   FeaturedPosts,
+  SeriesSection,
+  EventsSection,
   CTASection,
   containerVariants,
   itemVariants,

@@ -2,7 +2,7 @@ import { BlogHeader } from "@/components/blog-header"
 import { BlogFooter } from "@/components/blog-footer"
 import { getSettings } from "@/lib/settings-actions"
 import { SETTING_KEYS } from "@/lib/settings-constants"
-import { getFeaturedPosts } from "@/lib/db-actions"
+import { getFeaturedPosts, getPublishedSeries, getPublishedEvents } from "@/lib/db-actions"
 import { HomePageClient } from "@/components/home-page-client"
 
 export default async function Home() {
@@ -14,6 +14,8 @@ export default async function Home() {
   ])
   
   const featuredPosts = await getFeaturedPosts(3)
+  const seriesList = await getPublishedSeries()
+  const eventsList = await getPublishedEvents()
 
   return (
     <main className="min-h-screen bg-linear-to-br from-amber-50 via-orange-50 to-yellow-50">
@@ -24,6 +26,8 @@ export default async function Home() {
         heroDescription={settings[SETTING_KEYS.HERO_DESCRIPTION] || "Welcome to TRISKIDEAS. I'm Ferdinand Ibu Ogbaji—a medical doctor, artist, and passionate explorer of human potential. Here, we delve into the intersection of medicine, creativity, and personal transformation."}
         heroImage={settings[SETTING_KEYS.HERO_IMAGE] && settings[SETTING_KEYS.HERO_IMAGE].trim() !== '' ? settings[SETTING_KEYS.HERO_IMAGE] : "/IMG-20251113-WA0001.jpg"}
         featuredPosts={featuredPosts}
+        seriesList={seriesList}
+        eventsList={eventsList}
       />
       <BlogFooter />
     </main>

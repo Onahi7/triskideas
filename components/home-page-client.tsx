@@ -12,6 +12,28 @@ interface Post {
   publishedAt: Date | null
 }
 
+interface Series {
+  id: number
+  title: string
+  description: string
+  imageUrl: string | null
+  slug: string
+  publishedAt: Date | null
+  episodeCount?: number
+}
+
+interface Event {
+  id: number
+  title: string
+  description: string
+  imageUrl: string | null
+  slug: string
+  startDate: Date
+  eventType: string
+  location: string | null
+  published: boolean
+}
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -25,13 +47,17 @@ export function HomePageClient({
   heroSubtitle, 
   heroDescription, 
   heroImage, 
-  featuredPosts 
+  featuredPosts,
+  seriesList,
+  eventsList
 }: { 
   heroTitle: string;
   heroSubtitle: string;
   heroDescription: string;
   heroImage: string;
   featuredPosts: Post[];
+  seriesList: Series[];
+  eventsList: Event[];
 }) {
   return (
     <>
@@ -57,6 +83,12 @@ export function HomePageClient({
 
       {/* Featured Articles Section */}
       <ClientHome.FeaturedPosts posts={featuredPosts} />
+
+      {/* Series Section */}
+      <ClientHome.SeriesSection seriesList={seriesList} />
+
+      {/* Events Section */}
+      <ClientHome.EventsSection eventsList={eventsList} />
 
       {/* CTA Section */}
       <ClientHome.CTASection />
