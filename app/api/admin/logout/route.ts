@@ -1,11 +1,16 @@
 import { NextResponse } from 'next/server'
+import { deleteAdminSession } from '@/lib/admin-auth'
 
 export async function POST() {
   try {
+    // Clear server-side session
+    deleteAdminSession()
+    
     // Create response
     const response = NextResponse.json({ success: true })
     
-    // Clear any authentication cookies if you're using them
+    // Clear authentication cookies
+    response.cookies.delete('adminAuth')
     response.cookies.delete('admin-session')
     
     return response

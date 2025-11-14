@@ -33,6 +33,9 @@ export function BlogHeader() {
           <Link href="/blog" className="text-amber-900 hover:text-amber-700 transition font-medium">
             Articles
           </Link>
+          <Link href="/series" className="text-amber-900 hover:text-amber-700 transition font-medium">
+            Series
+          </Link>
           <Link href="/events" className="text-amber-900 hover:text-amber-700 transition font-medium">
             Events
           </Link>
@@ -72,6 +75,13 @@ export function BlogHeader() {
             onClick={() => setMobileMenuOpen(false)}
           >
             Articles
+          </Link>
+          <Link
+            href="/series"
+            className="text-amber-900 hover:text-amber-700 transition font-medium"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Series
           </Link>
           <Link
             href="/events"

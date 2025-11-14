@@ -24,6 +24,12 @@ export default function AdminSettingsPage() {
     [SETTING_KEYS.ABOUT_TITLE]: "About Dr. Ferdinand Ibu Ogbaji",
     [SETTING_KEYS.ABOUT_CONTENT]: "",
     [SETTING_KEYS.AUTHOR_BIO]: "Dr. Ferdinand Ibu Ogbaji is a passionate medical doctor, artist, and thinker based in Jos, Nigeria. He is dedicated to helping people unlock their God-given potential and make positive contributions to society. Married to Florence, Ferdinand combines his medical expertise with artistic creativity to explore transformative ideas.",
+    [SETTING_KEYS.PAYMENT_GATEWAY]: "none",
+    [SETTING_KEYS.PAYSTACK_PUBLIC_KEY]: "",
+    [SETTING_KEYS.PAYSTACK_SECRET_KEY]: "",
+    [SETTING_KEYS.OPAY_PUBLIC_KEY]: "",
+    [SETTING_KEYS.OPAY_SECRET_KEY]: "",
+    [SETTING_KEYS.OPAY_MERCHANT_ID]: "",
   })
 
   useEffect(() => {
@@ -188,6 +194,99 @@ export default function AdminSettingsPage() {
                 rows={4}
               />
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Payment Gateway Settings */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Payment Gateway Settings</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">Payment Gateway</label>
+              <select
+                value={settings[SETTING_KEYS.PAYMENT_GATEWAY]}
+                onChange={(e) => updateSetting(SETTING_KEYS.PAYMENT_GATEWAY, e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+              >
+                <option value="none">None (Free events only)</option>
+                <option value="paystack">Paystack</option>
+                <option value="opay">OPay</option>
+              </select>
+              <p className="text-xs text-gray-500 mt-1">
+                Choose a payment gateway for paid events
+              </p>
+            </div>
+
+            {settings[SETTING_KEYS.PAYMENT_GATEWAY] === "paystack" && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">Paystack Public Key</label>
+                  <Input
+                    type="text"
+                    value={settings[SETTING_KEYS.PAYSTACK_PUBLIC_KEY]}
+                    onChange={(e) => updateSetting(SETTING_KEYS.PAYSTACK_PUBLIC_KEY, e.target.value)}
+                    placeholder="pk_test_..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">Paystack Secret Key</label>
+                  <Input
+                    type="password"
+                    value={settings[SETTING_KEYS.PAYSTACK_SECRET_KEY]}
+                    onChange={(e) => updateSetting(SETTING_KEYS.PAYSTACK_SECRET_KEY, e.target.value)}
+                    placeholder="sk_test_..."
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Get your keys from{" "}
+                    <a
+                      href="https://dashboard.paystack.com/#/settings/developers"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-amber-700 underline"
+                    >
+                      Paystack Dashboard
+                    </a>
+                  </p>
+                </div>
+              </>
+            )}
+
+            {settings[SETTING_KEYS.PAYMENT_GATEWAY] === "opay" && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">OPay Merchant ID</label>
+                  <Input
+                    type="text"
+                    value={settings[SETTING_KEYS.OPAY_MERCHANT_ID]}
+                    onChange={(e) => updateSetting(SETTING_KEYS.OPAY_MERCHANT_ID, e.target.value)}
+                    placeholder="256612345678901"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">OPay Public Key</label>
+                  <Input
+                    type="text"
+                    value={settings[SETTING_KEYS.OPAY_PUBLIC_KEY]}
+                    onChange={(e) => updateSetting(SETTING_KEYS.OPAY_PUBLIC_KEY, e.target.value)}
+                    placeholder="OPAYPUB..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">OPay Secret Key</label>
+                  <Input
+                    type="password"
+                    value={settings[SETTING_KEYS.OPAY_SECRET_KEY]}
+                    onChange={(e) => updateSetting(SETTING_KEYS.OPAY_SECRET_KEY, e.target.value)}
+                    placeholder="OPAYPRV..."
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Get your credentials from your OPay merchant dashboard
+                  </p>
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
 

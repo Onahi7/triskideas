@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { verifyAdminCredentials } from "@/lib/auth-utils"
+import { createAdminSession } from "@/lib/admin-auth"
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,6 +19,9 @@ export async function POST(request: NextRequest) {
     const admin = await verifyAdminCredentials(username, password)
 
     if (admin) {
+      // Create server-side session
+      createAdminSession(admin.username)
+      
       const response = NextResponse.json({ 
         success: true, 
         message: "Login successful",

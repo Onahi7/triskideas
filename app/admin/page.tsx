@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { FileText, Eye, Users, Calendar } from "lucide-react"
+import { getAllPosts, getAllEvents, getAllSubscribers } from "@/lib/db-actions"
 
 interface AdminStats {
   totalPosts: number
@@ -30,19 +31,35 @@ export default function AdminDashboard() {
     const isLoggedIn = localStorage.getItem("adminAuth")
     if (!isLoggedIn) {
       router.push("/admin/login")
-    } else {
-      const posts = JSON.parse(localStorage.getItem("blog_posts") || "[]")
-      const totalViews = posts.reduce((sum: number, p: any) => sum + (p.viewCount || 0), 0)
-      setStats({
-        totalPosts: posts.length,
-        publishedPosts: posts.filter((p: any) => p.published).length,
-        draftPosts: posts.filter((p: any) => !p.published).length,
-        totalViews,
-        totalEvents: 0, // TODO: fetch from database
-        totalSubscribers: 0, // TODO: fetch from database
-      })
-      setLoading(false)
+      return
     }
+    
+    const fetchStats = async () => {
+      try {
+        const [posts, events, subscribers] = await Promise.all([
+          getAllPosts(),
+          getAllEvents(),
+          getAllSubscribers(),
+        ])
+        
+        const totalViews = posts.reduce((sum, p) => sum + (p.viewCount || 0), 0)
+        
+        setStats({
+          totalPosts: posts.length,
+          publishedPosts: posts.filter((p) => p.published).length,
+          draftPosts: posts.filter((p) => !p.published).length,
+          totalViews,
+          totalEvents: events.length,
+          totalSubscribers: subscribers.length,
+        })
+      } catch (error) {
+        console.error("Failed to fetch stats:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchStats()
   }, [router])
 
   const statCards = [

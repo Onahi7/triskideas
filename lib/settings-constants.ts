@@ -8,4 +8,11 @@ export const SETTING_KEYS = {
   ABOUT_TITLE: "about_title",
   ABOUT_CONTENT: "about_content",
   AUTHOR_BIO: "author_bio",
+  // Payment Gateway Settings
+  PAYMENT_GATEWAY: "payment_gateway", // "paystack" | "opay" | "none"
+  PAYSTACK_PUBLIC_KEY: "paystack_public_key",
+  PAYSTACK_SECRET_KEY: "paystack_secret_key",
+  OPAY_PUBLIC_KEY: "opay_public_key",
+  OPAY_SECRET_KEY: "opay_secret_key",
+  OPAY_MERCHANT_ID: "opay_merchant_id",
 }

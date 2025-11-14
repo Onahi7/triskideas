@@ -28,6 +28,7 @@ import {
 import { eq, desc, ilike, and, isNull, gte } from "drizzle-orm"
 import { updateTag } from "next/cache"
 import { sendNewPostEmail, sendEventNotificationEmail } from "@/lib/email"
+import { requireAdminAuth } from "@/lib/admin-auth"
 
 // Re-export types for use in components
 export type { Post, Event, Series, Episode, Comment, InsertPost, InsertEvent, InsertSeries, InsertEpisode, InsertComment } from "@/lib/schema"
@@ -81,6 +82,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 }
 
 export async function createPost(data: InsertPost): Promise<Post> {
+  await requireAdminAuth()
   const result = await db.insert(posts).values(data).returning()
   updateTag(`posts`)
 
@@ -95,6 +97,7 @@ export async function createPost(data: InsertPost): Promise<Post> {
 }
 
 export async function updatePost(id: number, data: Partial<InsertPost>): Promise<Post> {
+  await requireAdminAuth()
   const result = await db
     .update(posts)
     .set({ ...data, updatedAt: new Date() })
@@ -105,6 +108,7 @@ export async function updatePost(id: number, data: Partial<InsertPost>): Promise
 }
 
 export async function deletePost(id: number): Promise<void> {
+  await requireAdminAuth()
   await db.delete(posts).where(eq(posts.id, id))
   updateTag(`posts`)
 }
@@ -122,17 +126,29 @@ export async function subscribeEmail(email: string): Promise<{ success: boolean;
   }
 }
 
+export async function getAllSubscribers() {
+  return await db.select().from(subscribers).orderBy(desc(subscribers.subscribedAt))
+}
+
+export async function deleteSubscriber(id: number): Promise<void> {
+  await requireAdminAuth()
+  await db.delete(subscribers).where(eq(subscribers.id, id))
+  updateTag(`subscribers`)
+}
+
 export async function getCategories() {
   return await db.select().from(categories).orderBy(categories.name)
 }
 
 export async function createCategory(data: any) {
+  await requireAdminAuth()
   const result = await db.insert(categories).values(data).returning()
   updateTag(`categories`)
   return result[0]
 }
 
 export async function updateCategory(id: number, data: any) {
+  await requireAdminAuth()
   const result = await db
     .update(categories)
     .set({ ...data })
@@ -143,6 +159,7 @@ export async function updateCategory(id: number, data: any) {
 }
 
 export async function deleteCategory(id: number): Promise<void> {
+  await requireAdminAuth()
   await db.delete(categories).where(eq(categories.id, id))
   updateTag(`categories`)
 }
@@ -163,6 +180,7 @@ export async function getEventBySlug(slug: string): Promise<Event | null> {
 }
 
 export async function createEvent(data: InsertEvent): Promise<Event> {
+  await requireAdminAuth()
   const result = await db.insert(events).values(data).returning()
   updateTag(`events`)
 
@@ -188,6 +206,7 @@ export async function createEvent(data: InsertEvent): Promise<Event> {
 }
 
 export async function updateEvent(id: number, data: Partial<InsertEvent>): Promise<Event> {
+  await requireAdminAuth()
   const result = await db
     .update(events)
     .set({ ...data, updatedAt: new Date() })
@@ -198,6 +217,7 @@ export async function updateEvent(id: number, data: Partial<InsertEvent>): Promi
 }
 
 export async function deleteEvent(id: number): Promise<void> {
+  await requireAdminAuth()
   await db.delete(events).where(eq(events.id, id))
   updateTag(`events`)
 }
@@ -212,12 +232,42 @@ export async function getEventRegistrations(eventId: number) {
   return await db.select().from(eventRegistrations).where(eq(eventRegistrations.eventId, eventId))
 }
 
-export async function getAllSeries(): Promise<Series[]> {
-  return await db.select().from(series).orderBy(desc(series.createdAt))
+export async function getAllSeries(): Promise<any[]> {
+  const allSeries = await db.select().from(series).orderBy(desc(series.createdAt))
+  
+  // Add episode count to each series
+  const seriesWithCounts = await Promise.all(
+    allSeries.map(async (s) => {
+      const episodeList = await db.select().from(episodes).where(eq(episodes.seriesId, s.id))
+      return {
+        ...s,
+        episodeCount: episodeList.length,
+      }
+    })
+  )
+  
+  return seriesWithCounts
 }
 
-export async function getPublishedSeries(): Promise<Series[]> {
-  return await db.select().from(series).where(eq(series.published, true)).orderBy(desc(series.createdAt))
+export async function getPublishedSeries(): Promise<any[]> {
+  const publishedSeries = await db
+    .select()
+    .from(series)
+    .where(eq(series.published, true))
+    .orderBy(desc(series.createdAt))
+  
+  // Add episode count to each series
+  const seriesWithCounts = await Promise.all(
+    publishedSeries.map(async (s) => {
+      const episodeList = await db.select().from(episodes).where(eq(episodes.seriesId, s.id))
+      return {
+        ...s,
+        episodeCount: episodeList.length,
+      }
+    })
+  )
+  
+  return seriesWithCounts
 }
 
 export async function getSeriesBySlug(slug: string): Promise<Series | null> {
@@ -225,13 +275,20 @@ export async function getSeriesBySlug(slug: string): Promise<Series | null> {
   return result[0] || null
 }
 
+export async function getSeriesById(id: number): Promise<Series | null> {
+  const result = await db.select().from(series).where(eq(series.id, id))
+  return result[0] || null
+}
+
 export async function createSeries(data: InsertSeries): Promise<Series> {
+  await requireAdminAuth()
   const result = await db.insert(series).values(data).returning()
   updateTag(`series`)
   return result[0]
 }
 
 export async function updateSeries(id: number, data: Partial<InsertSeries>): Promise<Series> {
+  await requireAdminAuth()
   const result = await db
     .update(series)
     .set({ ...data, updatedAt: new Date() })
@@ -242,6 +299,7 @@ export async function updateSeries(id: number, data: Partial<InsertSeries>): Pro
 }
 
 export async function deleteSeries(id: number): Promise<void> {
+  await requireAdminAuth()
   await db.delete(series).where(eq(series.id, id))
   updateTag(`series`)
 }
@@ -263,12 +321,14 @@ export async function getEpisodeBySlug(slug: string): Promise<Episode | null> {
 }
 
 export async function createEpisode(data: InsertEpisode): Promise<Episode> {
+  await requireAdminAuth()
   const result = await db.insert(episodes).values(data).returning()
   updateTag(`episodes`)
   return result[0]
 }
 
 export async function updateEpisode(id: number, data: Partial<InsertEpisode>): Promise<Episode> {
+  await requireAdminAuth()
   const result = await db
     .update(episodes)
     .set({ ...data, updatedAt: new Date() })
@@ -279,6 +339,7 @@ export async function updateEpisode(id: number, data: Partial<InsertEpisode>): P
 }
 
 export async function deleteEpisode(id: number): Promise<void> {
+  await requireAdminAuth()
   await db.delete(episodes).where(eq(episodes.id, id))
   updateTag(`episodes`)
 }

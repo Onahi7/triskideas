@@ -6,8 +6,11 @@ import { eq, and, desc, or, inArray } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { cookies } from "next/headers"
 import { randomUUID } from "node:crypto"
-import { sendAdminCommentNotification } from "@/lib/email"
-import { USER_SESSION_COOKIE, getUserFromSessionToken } from "@/lib/user-auth"
+import { sendAdminCommentNotification, sendCommentReplyNotification } from "@/lib/email"
+import { getUserFromSessionToken } from "@/lib/user-auth"
+import { requireAdminAuth } from "@/lib/admin-auth"
+
+const USER_SESSION_COOKIE = "triskideas_user_session"
 
 // Get all comments for a post (approved only for public)
 export async function getPostComments(postId: number): Promise<Comment[]> {
@@ -21,7 +24,8 @@ export async function getPostComments(postId: number): Promise<Comment[]> {
 
 // Get all comments with replies (nested structure)
 export async function getPostCommentsWithReplies(postId: number, visibilityTokens: string[] = []): Promise<any[]> {
-  const sessionToken = cookies().get(USER_SESSION_COOKIE)?.value || null
+  const cookieStore = await cookies()
+  const sessionToken = cookieStore.get(USER_SESSION_COOKIE)?.value || null
   const currentUser = await getUserFromSessionToken(sessionToken)
 
   const visibilityConditions = [eq(comments.approved, true)]
@@ -69,7 +73,7 @@ export async function createComment(
   data: InsertComment,
 ): Promise<{ success: boolean; message: string; comment?: Comment; visibilityToken?: string }> {
   try {
-    const cookieStore = cookies()
+    const cookieStore = await cookies()
     const sessionToken = cookieStore.get(USER_SESSION_COOKIE)?.value || null
     const currentUser = await getUserFromSessionToken(sessionToken)
 
@@ -124,6 +128,7 @@ export async function createComment(
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://triskideas.com"
     const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL || "triskideas@gmail.com"
 
+    // Send admin notification
     sendAdminCommentNotification({
       adminEmail,
       commenterName,
@@ -135,6 +140,28 @@ export async function createComment(
     }).catch((error) => {
       console.error("Failed to notify admin about new comment:", error)
     })
+
+    // If this is a reply, notify the parent commenter
+    if (data.parentId) {
+      const [parentComment] = await db
+        .select()
+        .from(comments)
+        .where(eq(comments.id, data.parentId))
+        .limit(1)
+
+      if (parentComment && parentComment.notifyOnReplies && parentComment.email !== commenterEmail) {
+        sendCommentReplyNotification({
+          recipientEmail: parentComment.email,
+          recipientName: parentComment.name,
+          replierName: commenterName,
+          replyContent: data.content,
+          postTitle: post.title || "Blog Post",
+          postUrl: `${appUrl}/blog/${post.slug}#comment-${createdComment.id}`,
+        }).catch((error) => {
+          console.error("Failed to send reply notification:", error)
+        })
+      }
+    }
 
     revalidatePath(`/blog`, "page")
 
@@ -155,12 +182,14 @@ export async function createComment(
 
 // Get all comments (for admin - includes unapproved)
 export async function getAllComments(): Promise<Comment[]> {
+  await requireAdminAuth()
   const result = await db.select().from(comments).orderBy(desc(comments.createdAt))
   return result
 }
 
 // Get pending comments (admin)
 export async function getPendingComments(): Promise<Comment[]> {
+  await requireAdminAuth()
   const result = await db
     .select()
     .from(comments)
@@ -171,12 +200,14 @@ export async function getPendingComments(): Promise<Comment[]> {
 
 // Approve comment
 export async function approveComment(id: number): Promise<void> {
+  await requireAdminAuth()
   await db.update(comments).set({ approved: true }).where(eq(comments.id, id))
   revalidatePath(`/admin/comments`, "page")
 }
 
 // Delete comment
 export async function deleteComment(id: number): Promise<void> {
+  await requireAdminAuth()
   await db.delete(comments).where(eq(comments.id, id))
   revalidatePath(`/admin/comments`, "page")
 }

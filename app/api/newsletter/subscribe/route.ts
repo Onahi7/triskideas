@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { subscribeEmail } from "@/lib/db-actions"
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,10 +10,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid email" }, { status: 400 })
     }
 
-    // TODO: Call subscribeEmail server action
-    // This will automatically add to subscriber list and trigger email
+    const result = await subscribeEmail(email)
 
-    return NextResponse.json({ success: true, message: "Successfully subscribed!" }, { status: 201 })
+    if (!result.success) {
+      return NextResponse.json({ error: result.message }, { status: 400 })
+    }
+
+    return NextResponse.json({ success: true, message: result.message }, { status: 201 })
   } catch (error) {
     console.error("Subscription error:", error)
     return NextResponse.json({ error: "Failed to subscribe" }, { status: 500 })

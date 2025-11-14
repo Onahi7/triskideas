@@ -1,10 +1,11 @@
+"use server"
+
 import { db } from "@/lib/db"
 import { users, userSessions, type User } from "@/lib/schema"
 import { eq, and, gt } from "drizzle-orm"
 import bcrypt from "bcryptjs"
 import crypto from "node:crypto"
 
-export const USER_SESSION_COOKIE = "triskideas_user_session"
 const SESSION_DURATION_MS = 1000 * 60 * 60 * 24 * 30 // 30 days
 
 function hashToken(token: string) {
@@ -38,7 +39,7 @@ export async function registerUser({
     })
     .returning()
 
-  const safeUser = sanitizeUser(result[0])
+  const safeUser = await sanitizeUser(result[0])
   return { success: true, message: "Account created", user: safeUser }
 }
 
@@ -60,7 +61,7 @@ export async function authenticateUser({
     return { success: false, message: "Invalid credentials" }
   }
 
-  return { success: true, message: "Authenticated", user: sanitizeUser(user) }
+  return { success: true, message: "Authenticated", user: await sanitizeUser(user) }
 }
 
 export async function createUserSession(userId: number) {
@@ -100,10 +101,10 @@ export async function getUserFromSessionToken(token?: string | null) {
     return null
   }
 
-  return sanitizeUser(userRecords[0])
+  return await sanitizeUser(userRecords[0])
 }
 
-export function sanitizeUser(user: User) {
+export async function sanitizeUser(user: User) {
   const { passwordHash, ...rest } = user
   return rest
 }

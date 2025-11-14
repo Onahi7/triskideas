@@ -4,6 +4,7 @@ import { db } from "@/lib/db"
 import { siteSettings, type SiteSetting } from "@/lib/schema"
 import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
+import { requireAdminAuth } from "@/lib/admin-auth"
 
 // Get a setting by key
 export async function getSetting(key: string): Promise<string | null> {
@@ -46,6 +47,7 @@ export async function getAllSettings(): Promise<SiteSetting[]> {
 
 // Update or create a setting
 export async function updateSetting(key: string, value: string): Promise<void> {
+  await requireAdminAuth()
   try {
     const existing = await db.select().from(siteSettings).where(eq(siteSettings.key, key))
     
@@ -68,6 +70,7 @@ export async function updateSetting(key: string, value: string): Promise<void> {
 
 // Update multiple settings at once
 export async function updateSettings(settings: Record<string, string>): Promise<void> {
+  await requireAdminAuth()
   try {
     for (const [key, value] of Object.entries(settings)) {
       await updateSetting(key, value)

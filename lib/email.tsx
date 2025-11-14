@@ -676,3 +676,68 @@ export async function sendAdminCommentNotification({
     console.error("Failed to send admin comment notification:", error)
   }
 }
+
+export async function sendCommentReplyNotification({
+  recipientEmail,
+  recipientName,
+  replierName,
+  replyContent,
+  postTitle,
+  postUrl,
+}: {
+  recipientEmail: string
+  recipientName: string
+  replierName: string
+  replyContent: string
+  postTitle: string
+  postUrl: string
+}) {
+  const formattedContent = replyContent
+    .split('\n')
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean)
+    .map((paragraph) => `<p style="margin-bottom: 12px;">${paragraph}</p>`)
+    .join("")
+
+  const content = `
+    <div class="greeting">Hello ${recipientName}! 💬</div>
+    
+    <div class="main-title">Someone replied to your comment!</div>
+    
+    <div class="description">
+      <strong>${replierName}</strong> has replied to your comment on the post "<strong>${postTitle}</strong>".
+    </div>
+    
+    <div style="background: #f0f9ff; border-left: 4px solid #0284c7; padding: 16px; border-radius: 12px; margin: 24px 0;">
+      <div style="font-size: 14px; color: #075985; font-weight: 600; margin-bottom: 8px;">
+        ${replierName}'s reply:
+      </div>
+      <div style="font-size: 15px; color: #0c4a6e; line-height: 1.6;">
+        ${formattedContent || replyContent}
+      </div>
+    </div>
+    
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="${postUrl}" class="cta-button">
+        💬 View Conversation
+      </a>
+    </div>
+    
+    <div style="background: #fef3c7; border: 1px solid #fde68a; padding: 16px; border-radius: 8px; margin: 24px 0; text-align: center;">
+      <div style="color: #92400e; font-size: 14px;">
+        Continue the conversation and share your thoughts!
+      </div>
+    </div>
+  `
+
+  try {
+    await resend.emails.send({
+      from: "noreply@triskideas.com",
+      to: recipientEmail,
+      subject: `💬 ${replierName} replied to your comment on "${postTitle}"`,
+      html: getEmailTemplate(content, `New reply from ${replierName}`),
+    })
+  } catch (error) {
+    console.error("Failed to send reply notification:", error)
+  }
+}

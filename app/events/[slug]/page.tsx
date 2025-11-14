@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -11,34 +11,34 @@ import { Input } from "@/components/ui/input"
 import { ArrowLeft, Calendar, MapPin, Users, DollarSign } from "lucide-react"
 import { motion } from "framer-motion"
 import { useToast } from "@/hooks/use-toast"
-
-interface EventDetail {
-  id: number
-  title: string
-  description: string
-  richContent: string
-  startDate: string
-  endDate: string
-  location: string
-  capacity: number
-  eventType: "free" | "paid"
-  price: string
-  imageUrl: string
-}
+import { getEventBySlug, type Event } from "@/lib/db-actions"
 
 export default function EventDetailPage() {
   const params = useParams()
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
+  const [dataLoading, setDataLoading] = useState(true)
   const [showRegistration, setShowRegistration] = useState(false)
+  const [event, setEvent] = useState<Event | null>(null)
   const [registrationData, setRegistrationData] = useState({
     firstName: "",
     lastName: "",
     email: "",
   })
 
-  // TODO: Fetch event by slug
-  const event: EventDetail | null = null
+  useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        const eventData = await getEventBySlug(params.slug as string)
+        setEvent(eventData)
+      } catch (error) {
+        console.error("Failed to fetch event:", error)
+      } finally {
+        setDataLoading(false)
+      }
+    }
+    fetchEvent()
+  }, [params.slug])
 
   const handleRegistration = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -54,16 +54,54 @@ export default function EventDetailPage() {
         return
       }
 
-      // TODO: Call registerForEvent server action
+      if (!event) return
+
+      const response = await fetch("/api/events/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          eventId: event.id,
+          eventSlug: params.slug,
+          firstName: registrationData.firstName,
+          lastName: registrationData.lastName,
+          email: registrationData.email,
+          paymentStatus: event.eventType === "free" ? "completed" : "pending",
+        }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || "Registration failed")
+      }
+
       toast({
         title: "Success",
         description: "Registration successful! Check your email for confirmation.",
       })
       setShowRegistration(false)
       setRegistrationData({ firstName: "", lastName: "", email: "" })
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to register",
+        variant: "destructive",
+      })
     } finally {
       setLoading(false)
     }
+  }
+
+  if (dataLoading) {
+    return (
+      <main className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
+        <div className="max-w-4xl mx-auto px-4 py-12">
+          <div className="text-center text-gray-600 py-12">Loading event...</div>
+        </div>
+      </main>
+    )
   }
 
   if (!event) {
@@ -155,7 +193,7 @@ export default function EventDetailPage() {
 
           <Card className="mb-8">
             <CardContent className="pt-6">
-              <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: event.richContent }} />
+              <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: event.richContent || event.description }} />
             </CardContent>
           </Card>
 

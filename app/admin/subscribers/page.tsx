@@ -6,11 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Download, Search, Trash2 } from "lucide-react"
+import { getAllSubscribers, deleteSubscriber } from "@/lib/db-actions"
 
 interface Subscriber {
   id: number
   email: string
-  subscribedAt: string
+  subscribedAt: Date | null
 }
 
 export default function SubscribersPage() {
@@ -26,19 +27,42 @@ export default function SubscribersPage() {
       router.push("/admin/login")
       return
     }
-    // TODO: Fetch subscribers from database
-    setLoading(false)
+    fetchSubscribers()
   }, [router])
+
+  const fetchSubscribers = async () => {
+    try {
+      setLoading(true)
+      const data = await getAllSubscribers()
+      setSubscribers(data)
+    } catch (error) {
+      console.error("Failed to fetch subscribers:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
     const filtered = subscribers.filter((s) => s.email.toLowerCase().includes(searchTerm.toLowerCase()))
     setFilteredSubscribers(filtered)
   }, [searchTerm, subscribers])
 
+  const handleDeleteSubscriber = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this subscriber?")) return
+    try {
+      await deleteSubscriber(id)
+      setSubscribers((prev) => prev.filter((s) => s.id !== id))
+    } catch (error) {
+      console.error("Failed to delete subscriber:", error)
+    }
+  }
+
   const exportSubscribers = () => {
     const csv =
       "Email,Subscribed Date\n" +
-      subscribers.map((s) => `${s.email},${new Date(s.subscribedAt).toLocaleDateString()}`).join("\n")
+      subscribers
+        .map((s) => `${s.email},${s.subscribedAt ? new Date(s.subscribedAt).toLocaleDateString() : "N/A"}`)
+        .join("\n")
     const blob = new Blob([csv], { type: "text/csv" })
     const url = window.URL.createObjectURL(blob)
     const a = document.createElement("a")
@@ -90,9 +114,16 @@ export default function SubscribersPage() {
                 >
                   <div>
                     <p className="font-medium text-gray-900">{subscriber.email}</p>
-                    <p className="text-sm text-gray-500">{new Date(subscriber.subscribedAt).toLocaleDateString()}</p>
+                    <p className="text-sm text-gray-500">
+                      {subscriber.subscribedAt ? new Date(subscriber.subscribedAt).toLocaleDateString() : "N/A"}
+                    </p>
                   </div>
-                  <Button variant="ghost" size="sm" className="text-red-600 hover:bg-red-50">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-600 hover:bg-red-50"
+                    onClick={() => handleDeleteSubscriber(subscriber.id)}
+                  >
                     <Trash2 size={16} />
                   </Button>
                 </div>
