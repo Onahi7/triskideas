@@ -88,6 +88,8 @@ function HeroImage({ imageUrl }: { imageUrl: string }) {
 }
 
 function FeaturedPosts({ posts }: { posts: Post[] }) {
+  const featured = posts.slice(0, 3)
+
   return (
     <motion.section
       initial="hidden"
@@ -101,29 +103,33 @@ function FeaturedPosts({ posts }: { posts: Post[] }) {
         <p className="text-center text-gray-600 text-lg">Explore the most impactful articles</p>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {posts.length > 0 ? (
-          posts.map((post) => (
-            <motion.div key={post.id} variants={itemVariants}>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {featured.length > 0 ? (
+          featured.map((post, index) => (
+            <motion.div
+              key={post.id}
+              variants={itemVariants}
+              className={index === 2 ? "hidden lg:block" : "block"}
+            >
               <Link href={`/blog/${post.slug}`}>
                 <div className="group cursor-pointer h-full">
                   <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 h-full flex flex-col">
-                    {post.imageUrl && (
-                      <div className="relative h-48 overflow-hidden bg-gray-200">
+                    <div className="relative w-full overflow-hidden bg-gray-200">
+                      <div className="relative aspect-4/3">
                         <Image
                           src={post.imageUrl || "/placeholder.svg"}
                           alt={post.title}
-                          width={400}
-                          height={200}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          fill
+                          sizes="(max-width: 1024px) 100vw, 33vw"
+                          className="object-cover transition-transform duration-500 group-hover:scale-110"
                         />
                       </div>
-                    )}
-                    <div className="p-8 flex flex-col flex-grow">
+                    </div>
+                    <div className="p-8 flex flex-col grow">
                       <h4 className="text-xl font-bold text-amber-900 mb-3 group-hover:text-amber-700 transition line-clamp-2">
                         {post.title}
                       </h4>
-                      <p className="text-gray-600 mb-4 leading-relaxed flex-grow line-clamp-3">{post.excerpt}</p>
+                      <p className="text-gray-600 mb-4 leading-relaxed grow line-clamp-3">{post.excerpt}</p>
                       <div className="flex items-center justify-between pt-4 border-t border-amber-100 mt-auto">
                         <span className="text-sm text-amber-700 font-medium">
                           {post.publishedAt
@@ -145,7 +151,7 @@ function FeaturedPosts({ posts }: { posts: Post[] }) {
             </motion.div>
           ))
         ) : (
-          <motion.div variants={itemVariants} className="col-span-2 text-center py-12">
+          <motion.div variants={itemVariants} className="col-span-full text-center py-12">
             <p className="text-gray-500 text-lg">Featured articles coming soon!</p>
           </motion.div>
         )}
@@ -165,7 +171,7 @@ function CTASection() {
     >
       <motion.div
         variants={itemVariants}
-        className="bg-gradient-to-r from-amber-700 to-amber-800 rounded-2xl p-8 md:p-12 text-center text-white shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105"
+        className="bg-linear-to-r from-amber-700 to-amber-800 rounded-2xl p-8 md:p-12 text-center text-white shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105"
       >
         <h3 className="text-3xl md:text-4xl font-bold mb-4">Ready to Explore?</h3>
         <p className="text-lg mb-8 text-amber-50 text-balance">

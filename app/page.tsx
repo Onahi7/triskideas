@@ -13,7 +13,7 @@ export default async function Home() {
     SETTING_KEYS.HERO_DESCRIPTION,
   ])
   
-  const featuredPosts = await getFeaturedPosts(2)
+  const featuredPosts = await getFeaturedPosts(3)
 
   return (
     <main className="min-h-screen bg-linear-to-br from-amber-50 via-orange-50 to-yellow-50">
