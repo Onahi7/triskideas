@@ -1,9 +1,10 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion, useScroll, useTransform } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { useRef } from "react"
 
 interface Post {
   id: number
@@ -24,7 +25,7 @@ const containerVariants = {
 
 const itemVariants = {
   hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
 }
 
 function HeroContent({ title, subtitle, description }: { title: string; subtitle: string; description: string }) {
@@ -71,9 +72,29 @@ function HeroContent({ title, subtitle, description }: { title: string; subtitle
 }
 
 function HeroImage({ imageUrl }: { imageUrl: string }) {
+  const imageRef = useRef<HTMLDivElement>(null)
+  
+  // Track scroll position relative to the hero section
+  const { scrollYProgress } = useScroll({
+    target: imageRef,
+    offset: ["start start", "end start"]
+  })
+  
+  // Transform scroll progress to animation values
+  const y = useTransform(scrollYProgress, [0, 1], [0, -150]) // Parallax movement
+  const rotate = useTransform(scrollYProgress, [0, 1], [0, -8]) // Subtle rotation
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.9]) // Slight scale down
+  
   return (
-    <motion.div variants={itemVariants} className="flex justify-center">
-      <div className="w-full max-w-sm aspect-square bg-gradient-to-br from-amber-200 to-yellow-200 rounded-2xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105">
+    <motion.div 
+      ref={imageRef}
+      variants={itemVariants} 
+      className="flex justify-center"
+    >
+      <motion.div 
+        style={{ y, rotate, scale }}
+        className="w-full max-w-sm aspect-square bg-linear-to-br from-amber-200 to-yellow-200 rounded-2xl overflow-hidden shadow-2xl hover:shadow-3xl transition-shadow duration-500"
+      >
         <Image
           src={imageUrl}
           alt="Dr. Ferdinand Ibu Ogbaji"
@@ -82,7 +103,7 @@ function HeroImage({ imageUrl }: { imageUrl: string }) {
           className="w-full h-full object-cover"
           priority
         />
-      </div>
+      </motion.div>
     </motion.div>
   )
 }
