@@ -607,3 +607,72 @@ export async function sendWelcomeEmailsBulk(subscribers: { email: string; firstN
 export function getEmailQueueStatus() {
   return emailQueue.getQueueStatus()
 }
+
+interface AdminCommentNotification {
+  adminEmail?: string
+  commenterName: string
+  commenterEmail: string
+  commentContent: string
+  postTitle: string
+  postUrl: string
+  manageUrl?: string
+}
+
+export async function sendAdminCommentNotification({
+  adminEmail,
+  commenterName,
+  commenterEmail,
+  commentContent,
+  postTitle,
+  postUrl,
+  manageUrl,
+}: AdminCommentNotification) {
+  const fallbackAdminEmail = process.env.ADMIN_NOTIFICATION_EMAIL || "triskideas@gmail.com"
+  const recipient = adminEmail || fallbackAdminEmail
+  if (!recipient) {
+    console.warn("No admin email configured for comment notifications")
+    return
+  }
+
+  const safeManageUrl =
+    manageUrl || `${process.env.NEXT_PUBLIC_APP_URL || "https://triskideas.com"}/admin/comments`
+  const formattedContent = commentContent
+    .split('\n')
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean)
+    .map((paragraph) => `<p style="margin-bottom: 12px;">${paragraph}</p>`)
+    .join("")
+
+  const content = `
+    <div class="greeting">New comment awaiting review 📨</div>
+    <div class="main-title">${commenterName} replied on "${postTitle}"</div>
+
+    <div style="background: #fff7ed; border-left: 4px solid #f97316; padding: 16px; border-radius: 12px; margin: 24px 0;">
+      <div style="font-size: 15px; color: #92400e; line-height: 1.6;">
+        ${formattedContent || commentContent}
+      </div>
+    </div>
+
+    <div class="description">
+      <strong>From:</strong> ${commenterName} &lt;${commenterEmail}&gt;<br/>
+      <strong>Post:</strong> <a href="${postUrl}" style="color: #d97706; text-decoration: underline;">${postTitle}</a>
+    </div>
+
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="${safeManageUrl}" class="cta-button">
+        ✅ Moderate Comment
+      </a>
+    </div>
+  `
+
+  try {
+    await resend.emails.send({
+      from: "noreply@triskideas.com",
+      to: recipient,
+      subject: `📝 New comment on ${postTitle}`,
+      html: getEmailTemplate(content, `New comment from ${commenterName}`),
+    })
+  } catch (error) {
+    console.error("Failed to send admin comment notification:", error)
+  }
+}

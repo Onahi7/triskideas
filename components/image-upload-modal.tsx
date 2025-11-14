@@ -44,43 +44,83 @@ export function ImageUploadModal({ onUploadSuccess, currentImage, triggerLabel =
     }
 
     setLoading(true)
-    const formData = new FormData()
-    formData.append("file", file)
-    formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_PRESET || "")
+    
+    // Try Cloudinary first, then fallback to local upload
+    let uploadSuccess = false
+    
+    // Cloudinary upload attempt
+    if (process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME && process.env.NEXT_PUBLIC_CLOUDINARY_PRESET) {
+      const formData = new FormData()
+      formData.append("file", file)
+      formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_PRESET)
 
-    try {
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
-        {
-          method: "POST",
-          body: formData,
-        },
-      )
+      try {
+        const response = await fetch(
+          `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+          {
+            method: "POST",
+            body: formData,
+          },
+        )
 
-      if (!response.ok) {
-        throw new Error("Upload failed")
+        const data = await response.json()
+        
+        if (response.ok && data.secure_url) {
+          setPreview(data.secure_url)
+          onUploadSuccess(data.secure_url)
+          uploadSuccess = true
+          toast({
+            title: "Success",
+            description: "Image uploaded to Cloudinary successfully!",
+          })
+        }
+      } catch (error) {
+        console.warn('Cloudinary upload failed, trying local upload:', error)
       }
+    }
+    
+    // Local upload fallback
+    if (!uploadSuccess) {
+      const localFormData = new FormData()
+      localFormData.append("file", file)
 
-      const data = await response.json()
-      if (data.secure_url) {
-        setPreview(data.secure_url)
-        onUploadSuccess(data.secure_url)
-        toast({
-          title: "Success",
-          description: "Image uploaded successfully!",
+      try {
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: localFormData,
         })
-        setOpen(false)
+
+        const data = await response.json()
+        
+        if (!response.ok) {
+          throw new Error(data.error || `Upload failed with status ${response.status}`)
+        }
+
+        if (data.secure_url) {
+          setPreview(data.secure_url)
+          onUploadSuccess(data.secure_url)
+          uploadSuccess = true
+          toast({
+            title: "Success",
+            description: "Image uploaded locally successfully!",
+          })
+        }
+      } catch (error) {
+        console.error("Local upload failed:", error)
       }
-    } catch (error) {
-      console.error("Upload failed:", error)
+    }
+    
+    if (uploadSuccess) {
+      setOpen(false)
+    } else {
       toast({
         title: "Upload failed",
-        description: "There was an error uploading your image. Please try again.",
+        description: "Both Cloudinary and local upload failed. Please check your configuration.",
         variant: "destructive",
       })
-    } finally {
-      setLoading(false)
     }
+    
+    setLoading(false)
   }
 
   const handleRemoveImage = () => {

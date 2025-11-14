@@ -12,6 +12,27 @@ export const adminUsers = pgTable("admin_users", {
   updatedAt: timestamp("updated_at").defaultNow(),
 })
 
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  avatarUrl: text("avatar_url"),
+  role: varchar("role", { length: 50 }).default("reader"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+})
+
+export const userSessions = pgTable("user_sessions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  tokenHash: varchar("token_hash", { length: 255 }).notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+})
+
 export const posts = pgTable("posts", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
@@ -135,10 +156,14 @@ export const comments = pgTable("comments", {
     .notNull()
     .references(() => posts.id, { onDelete: "cascade" }),
   parentId: integer("parent_id"), // For replies
+  userId: integer("user_id").references(() => users.id, { onDelete: "set null" }),
   name: varchar("name", { length: 255 }).notNull(),
   email: varchar("email", { length: 255 }).notNull(),
+  website: varchar("website", { length: 255 }),
   content: text("content").notNull(),
   approved: boolean("approved").default(false),
+  notifyOnReplies: boolean("notify_on_replies").default(false),
+  visibilityToken: varchar("visibility_token", { length: 255 }),
   createdAt: timestamp("created_at").defaultNow(),
 })
 
@@ -158,6 +183,10 @@ export const siteSettings = pgTable("site_settings", {
 
 export type AdminUser = typeof adminUsers.$inferSelect
 export type InsertAdminUser = typeof adminUsers.$inferInsert
+export type User = typeof users.$inferSelect
+export type InsertUser = typeof users.$inferInsert
+export type UserSession = typeof userSessions.$inferSelect
+export type InsertUserSession = typeof userSessions.$inferInsert
 export type Post = typeof posts.$inferSelect
 export type InsertPost = typeof posts.$inferInsert
 export type Subscriber = typeof subscribers.$inferSelect
@@ -182,6 +211,7 @@ export type SiteSetting = typeof siteSettings.$inferSelect
 export type InsertSiteSetting = typeof siteSettings.$inferInsert
 
 export const insertAdminUserSchema = createInsertSchema(adminUsers)
+export const insertUserSchema = createInsertSchema(users)
 export const insertPostSchema = createInsertSchema(posts)
 export const insertSubscriberSchema = createInsertSchema(subscribers)
 export const insertCategorySchema = createInsertSchema(categories)

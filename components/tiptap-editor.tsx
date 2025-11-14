@@ -36,6 +36,7 @@ export function TiptapEditor({ value, onChange }: TiptapEditorProps) {
       }),
     ],
     content: value || "<p>Start writing...</p>",
+    immediatelyRender: false,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML())
     },

@@ -32,13 +32,29 @@ export function CloudinaryUpload({ onUploadSuccess }: CloudinaryUploadProps) {
           body: formData,
         },
       )
+      
       const data = await response.json()
+      
+      if (!response.ok) {
+        console.error('Cloudinary API Error:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorData: data
+        })
+        throw new Error(data.error?.message || `Upload failed with status ${response.status}`)
+      }
+      
       if (data.secure_url) {
         setPreview(data.secure_url)
         onUploadSuccess(data.secure_url)
+      } else {
+        throw new Error('No secure_url in response')
       }
     } catch (error) {
       console.error("Upload failed:", error)
+      
+      // You might want to show a toast notification here
+      // For now, we'll just log the error
     } finally {
       setLoading(false)
     }

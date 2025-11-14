@@ -21,12 +21,26 @@ export default function AdminLoginPage() {
     setLoading(true)
 
     try {
-      if (username === "admin" && password === "admin123") {
+      const response = await fetch('/api/admin/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok && data.success) {
         localStorage.setItem("adminAuth", "true")
+        localStorage.setItem("adminUser", JSON.stringify(data.user))
         router.push("/admin")
       } else {
-        setError("Invalid username or password")
+        setError(data.message || "Invalid username or password")
       }
+    } catch (error) {
+      console.error('Login error:', error)
+      setError("Login failed. Please check your connection and try again.")
     } finally {
       setLoading(false)
     }

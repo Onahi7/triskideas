@@ -118,66 +118,64 @@ export function SocialShare({
         Share this Article
       </Button>
 
-      {/* Social Share Options */}
-      {(showShare || !navigator.share) && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 10 }}
-          className="space-y-4"
-        >
-          <Card className="p-4 bg-white border border-amber-200">
-            <h3 className="text-lg font-semibold text-amber-900 mb-3">Share on Social Media</h3>
-            
-            {/* Social Platform Buttons */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-              {socialButtons.map((platform) => (
-                <Button
-                  key={platform.name}
-                  onClick={platform.onClick}
-                  className={`${platform.color} text-white flex flex-col items-center gap-2 py-3 h-auto transition-all duration-200 hover:scale-105`}
-                >
-                  <platform.icon className="w-5 h-5" />
-                  <span className="text-xs font-medium">{platform.name}</span>
-                </Button>
-              ))}
-            </div>
+      {/* Social Share Options - Always visible */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 10 }}
+        className="space-y-4"
+      >
+        <Card className="p-4 bg-white border border-amber-200">
+          <h3 className="text-lg font-semibold text-amber-900 mb-3">Share on Social Media</h3>
 
-            {/* Copy URL Section */}
-            <div className="border-t border-amber-100 pt-3">
-              <p className="text-sm text-gray-600 mb-2">Or copy the link:</p>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={fullUrl}
-                  readOnly
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm bg-gray-50 text-gray-700"
-                />
-                <Button
-                  onClick={copyToClipboard}
-                  variant="outline"
-                  className="px-3 py-2 border-amber-300 hover:bg-amber-50"
-                >
-                  {copied ? (
-                    <Check className="w-4 h-4 text-green-600" />
-                  ) : (
-                    <Copy className="w-4 h-4" />
-                  )}
-                </Button>
-              </div>
-              {copied && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-sm text-green-600 mt-1"
-                >
-                  Link copied to clipboard!
-                </motion.p>
-              )}
+          {/* Social Platform Buttons */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+            {socialButtons.map((platform) => (
+              <Button
+                key={platform.name}
+                onClick={platform.onClick}
+                className={`${platform.color} text-white flex flex-col items-center gap-2 py-3 h-auto transition-all duration-200 hover:scale-105`}
+              >
+                <platform.icon className="w-5 h-5" />
+                <span className="text-xs font-medium">{platform.name}</span>
+              </Button>
+            ))}
+          </div>
+
+          {/* Copy URL Section */}
+          <div className="border-t border-amber-100 pt-3">
+            <p className="text-sm text-gray-600 mb-2">Or copy the link:</p>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={fullUrl}
+                readOnly
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm bg-gray-50 text-gray-700"
+              />
+              <Button
+                onClick={copyToClipboard}
+                variant="outline"
+                className="px-3 py-2 border-amber-300 hover:bg-amber-50"
+              >
+                {copied ? (
+                  <Check className="w-4 h-4 text-green-600" />
+                ) : (
+                  <Copy className="w-4 h-4" />
+                )}
+              </Button>
             </div>
-          </Card>
-        </motion.div>
-      )}
+            {copied && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-sm text-green-600 mt-1"
+              >
+                Link copied to clipboard!
+              </motion.p>
+            )}
+          </div>
+        </Card>
+      </motion.div>
     </div>
   )
 }

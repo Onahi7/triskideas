@@ -14,6 +14,7 @@ import { motion } from "framer-motion"
 import { Eye, Calendar, User } from "lucide-react"
 import { getPostBySlug, type Post } from "@/lib/db-actions"
 import { getPostCommentsWithReplies } from "@/lib/comment-actions"
+import { VISIBILITY_TOKEN_STORAGE_KEY } from "@/components/comment-section"
 
 interface BlogPostClientProps {
   slug: string
@@ -23,17 +24,21 @@ export function BlogPostClient({ slug }: BlogPostClientProps) {
   const [post, setPost] = useState<Post | null>(null)
   const [comments, setComments] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [refreshKey, setRefreshKey] = useState(0)
+  const [visibilityTokens, setVisibilityTokens] = useState<string[]>([])
 
   useEffect(() => {
-    loadPost()
-  }, [slug])
+    const storedTokens = JSON.parse(localStorage.getItem(VISIBILITY_TOKEN_STORAGE_KEY) || "[]") as string[]
+    setVisibilityTokens(storedTokens)
+    loadPost(storedTokens)
+  }, [slug, refreshKey])
 
-  const loadPost = async () => {
+  const loadPost = async (tokens: string[] = visibilityTokens) => {
     try {
       const postData = await getPostBySlug(slug)
       if (postData) {
         setPost(postData)
-        const commentsData = await getPostCommentsWithReplies(postData.id)
+        const commentsData = await getPostCommentsWithReplies(postData.id, tokens)
         setComments(commentsData)
       }
     } catch (error) {
@@ -198,7 +203,18 @@ export function BlogPostClient({ slug }: BlogPostClientProps) {
         </motion.div>
 
         {/* Comment Section */}
-        <CommentSection postId={post.id} comments={comments} />
+        <CommentSection
+          postId={post.id}
+          comments={comments}
+          onCommentSubmit={(token) => {
+            if (token) {
+              const next = Array.from(new Set([...visibilityTokens, token]))
+              localStorage.setItem(VISIBILITY_TOKEN_STORAGE_KEY, JSON.stringify(next))
+              setVisibilityTokens(next)
+            }
+            setRefreshKey((prev) => prev + 1)
+          }}
+        />
       </article>
 
       {/* Floating Social Share */}

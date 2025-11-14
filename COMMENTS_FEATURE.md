@@ -56,6 +56,7 @@
 5. Admin reviews comment in `/admin/comments`
 6. Admin approves comment
 7. Comment appears on blog post
+8. Admin gets an email alert for each new pending comment
 
 ### Newsletter Popup Flow:
 1. User visits site
@@ -108,6 +109,7 @@
 ✅ **Moderation** - Control what appears on your blog
 ✅ **Smart Popups** - Not annoying, shows twice daily max
 ✅ **Data Collection** - Build your email list organically
+✅ **Instant Alerts** - Admin email notifications keep moderation fast
 
 ## Admin Tasks
 
@@ -129,3 +131,7 @@
 - Spam detection with Akismet
 - Emoji reactions
 - Social login for comments
+
+## Configuration
+
+- `ADMIN_NOTIFICATION_EMAIL` (optional): Defaults to `triskideas@gmail.com`. Set this env variable to change where moderation alerts are delivered.

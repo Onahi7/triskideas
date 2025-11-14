@@ -52,7 +52,6 @@ export default function ManagePostsPage() {
   }
 
   useEffect(() => {
-    useEffect(() => {
     let filtered = posts
 
     if (searchTerm) {
@@ -98,26 +97,6 @@ export default function ManagePostsPage() {
       setPostToDelete(null)
     }
     setDeleteDialogOpen(false)
-  }
-  }, [searchTerm, filterStatus, posts])
-
-  const handleDelete = (id: string) => {
-    setPostToDelete(id)
-    setDeleteDialogOpen(true)
-  }
-
-  const confirmDelete = () => {
-    if (postToDelete) {
-      const updated = posts.filter((p) => p.id !== postToDelete)
-      setPosts(updated)
-      localStorage.setItem("blog_posts", JSON.stringify(updated))
-      toast({
-        title: "Post deleted",
-        description: "The post has been successfully deleted",
-      })
-      setDeleteDialogOpen(false)
-      setPostToDelete(null)
-    }
   }
 
   return (

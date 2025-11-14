@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -9,32 +9,45 @@ import { useToast } from "@/hooks/use-toast"
 import { createComment } from "@/lib/comment-actions"
 import { MessageSquare, Reply } from "lucide-react"
 
+export const VISIBILITY_TOKEN_STORAGE_KEY = "triskideas_pending_comment_tokens"
+
 interface Comment {
   id: number
   postId: number
   parentId: number | null
   name: string
   email: string
+  website?: string | null
   content: string
   createdAt: Date
+  approved?: boolean
   replies?: Comment[]
 }
 
 interface CommentSectionProps {
   postId: number
   comments: Comment[]
+  onCommentSubmit?: (visibilityToken?: string) => void
 }
 
-export function CommentSection({ postId, comments }: CommentSectionProps) {
+export function CommentSection({ postId, comments, onCommentSubmit }: CommentSectionProps) {
   const { toast } = useToast()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     content: "",
     parentId: null as number | null,
+    website: "",
+    notifyOnReplies: false,
   })
   const [loading, setLoading] = useState(false)
   const [replyingTo, setReplyingTo] = useState<number | null>(null)
+  const [visibilityNotice, setVisibilityNotice] = useState(false)
+
+  useEffect(() => {
+    const storedTokens = JSON.parse(localStorage.getItem(VISIBILITY_TOKEN_STORAGE_KEY) || "[]") as string[]
+    setVisibilityNotice(storedTokens.length > 0)
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -46,6 +59,8 @@ export function CommentSection({ postId, comments }: CommentSectionProps) {
         parentId: formData.parentId,
         name: formData.name,
         email: formData.email,
+        website: formData.website,
+        notifyOnReplies: formData.notifyOnReplies,
         content: formData.content,
       })
 
@@ -54,8 +69,17 @@ export function CommentSection({ postId, comments }: CommentSectionProps) {
           title: "Comment submitted!",
           description: result.message,
         })
-        setFormData({ name: "", email: "", content: "", parentId: null })
+        setFormData({ name: "", email: "", content: "", parentId: null, website: "", notifyOnReplies: false })
         setReplyingTo(null)
+        if (result.visibilityToken) {
+          const storedTokens = JSON.parse(localStorage.getItem(VISIBILITY_TOKEN_STORAGE_KEY) || "[]") as string[]
+          const next = Array.from(new Set([...storedTokens, result.visibilityToken]))
+          localStorage.setItem(VISIBILITY_TOKEN_STORAGE_KEY, JSON.stringify(next))
+          onCommentSubmit?.(result.visibilityToken)
+          setVisibilityNotice(true)
+        } else {
+          onCommentSubmit?.()
+        }
       } else {
         toast({
           title: "Error",
@@ -129,6 +153,12 @@ export function CommentSection({ postId, comments }: CommentSectionProps) {
         </h3>
       </div>
 
+      {visibilityNotice && (
+        <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          Your recent comments will appear here with a "Pending moderation" badge until approved.
+        </div>
+      )}
+
       {/* Comment Form */}
       <Card className="mb-8 bg-amber-50">
         <CardContent className="pt-6">
@@ -167,6 +197,15 @@ export function CommentSection({ postId, comments }: CommentSectionProps) {
               </div>
             </div>
             <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">Website (optional)</label>
+              <Input
+                value={formData.website}
+                onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                placeholder="https://your-site.com"
+                className="bg-white"
+              />
+            </div>
+            <div>
               <label className="block text-sm font-medium text-gray-900 mb-2">Comment *</label>
               <Textarea
                 required
@@ -177,6 +216,14 @@ export function CommentSection({ postId, comments }: CommentSectionProps) {
                 className="bg-white"
               />
             </div>
+            <label className="flex items-center gap-2 text-sm text-gray-700">
+              <input
+                type="checkbox"
+                checked={formData.notifyOnReplies}
+                onChange={(e) => setFormData({ ...formData, notifyOnReplies: e.target.checked })}
+              />
+              Notify me when someone replies
+            </label>
             <Button type="submit" className="bg-amber-700 hover:bg-amber-800" disabled={loading}>
               {loading ? "Submitting..." : "Post Comment"}
             </Button>

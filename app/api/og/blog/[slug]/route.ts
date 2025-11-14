@@ -4,7 +4,8 @@ export const runtime = 'edge'
 
 export async function GET(request: Request, { params }: { params: { slug: string } }) {
   try {
-    const post = await getPostBySlug(params.slug)
+    const { slug } = await params
+    const post = await getPostBySlug(slug)
     
     if (!post) {
       return new Response('Post not found', { status: 404 })

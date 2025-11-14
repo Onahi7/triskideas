@@ -13,7 +13,7 @@ export function AdminSidebar() {
   const [isOpen, setIsOpen] = useState(true)
 
     const navItems = [
-    { name: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
+    { name: "Dashboard", path: "/admin", icon: LayoutDashboard },
     { name: "Posts", path: "/admin/posts", icon: FileText },
     { name: "Events", path: "/admin/events", icon: Calendar },
     { name: "Series", path: "/admin/series", icon: BookOpen },
@@ -23,8 +23,12 @@ export function AdminSidebar() {
     { name: "Settings", path: "/admin/settings", icon: Settings2 },
   ]
 
-  const handleLogout = () => {
-    localStorage.removeItem("adminAuth")
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/admin/logout', { method: 'POST' })
+    } catch (error) {
+      console.error('Logout error:', error)
+    }
     router.push("/admin/login")
   }
 
@@ -135,10 +139,6 @@ export function AdminSidebar() {
         </div>
       </motion.aside>
 
-      {/* Content wrapper shift */}
-      <motion.div animate={{ marginLeft: isOpen ? 256 : 80 }} transition={{ duration: 0.3 }} className="min-h-screen">
-        {/* This will contain the actual content */}
-      </motion.div>
     </>
   )
 }
