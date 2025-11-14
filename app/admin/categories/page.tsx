@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Trash2, Edit2, Plus } from "lucide-react"
+import { Trash2, Edit2, Plus, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { getCategories, createCategory, updateCategory, deleteCategory, type Category } from "@/lib/db-actions"
 import {
@@ -31,6 +31,7 @@ export default function ManageCategoriesPage() {
   const [loading, setLoading] = useState(true)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [categoryToDelete, setCategoryToDelete] = useState<number | null>(null)
+  const [submitting, setSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -67,6 +68,7 @@ export default function ManageCategoriesPage() {
       return
     }
 
+    setSubmitting(true)
     try {
       const slug = generateSlug(formData.name)
       
@@ -92,6 +94,8 @@ export default function ManageCategoriesPage() {
       loadCategories()
     } catch (error) {
       toast({ title: "Error", description: "Failed to save category", variant: "destructive" })
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -163,10 +167,11 @@ export default function ManageCategoriesPage() {
               />
             </div>
             <div className="flex gap-3 pt-4">
-              <Button type="submit" className="bg-amber-700 hover:bg-amber-800 text-white">
-                {editingId ? "Update Category" : "Create Category"}
+              <Button type="submit" className="bg-amber-700 hover:bg-amber-800 text-white" disabled={submitting}>
+                {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {submitting ? (editingId ? "Updating..." : "Creating...") : (editingId ? "Update Category" : "Create Category")}
               </Button>
-              <Button type="button" variant="outline" onClick={handleCancel}>
+              <Button type="button" variant="outline" onClick={handleCancel} disabled={submitting}>
                 Cancel
               </Button>
             </div>

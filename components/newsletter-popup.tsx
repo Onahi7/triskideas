@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Mail, X } from "lucide-react"
+import { Mail, X, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { shouldShowNewsletterPopup, recordNewsletterPopupShown } from "@/lib/newsletter-popup-actions"
 import { subscribeEmail } from "@/lib/db-actions"
@@ -101,6 +101,7 @@ export function NewsletterPopup() {
             />
           </div>
           <Button type="submit" className="w-full bg-amber-700 hover:bg-amber-800" disabled={loading}>
+            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {loading ? "Subscribing..." : "Subscribe Now"}
           </Button>
           <p className="text-xs text-gray-500 text-center">

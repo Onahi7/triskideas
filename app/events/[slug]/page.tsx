@@ -8,7 +8,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { ArrowLeft, Calendar, MapPin, Users, DollarSign } from "lucide-react"
+import { ArrowLeft, Calendar, MapPin, Users, DollarSign, Loader2 } from "lucide-react"
 import { motion } from "framer-motion"
 import { useToast } from "@/hooks/use-toast"
 import { getEventBySlug, type Event } from "@/lib/db-actions"
@@ -254,6 +254,7 @@ export default function EventDetailPage() {
                       className="flex-1 bg-amber-700 hover:bg-amber-800 text-white"
                       disabled={loading}
                     >
+                      {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                       {loading ? "Registering..." : "Complete Registration"}
                     </Button>
                     <Button

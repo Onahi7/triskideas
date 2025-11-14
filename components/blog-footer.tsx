@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
+import { Loader2 } from "lucide-react"
 
 export function BlogFooter() {
   const [email, setEmail] = useState("")
@@ -117,6 +118,7 @@ export function BlogFooter() {
                 disabled={loading}
               />
               <Button type="submit" className="w-full bg-amber-700 hover:bg-amber-600" disabled={loading}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {subscribed ? "Subscribed!" : loading ? "Subscribing..." : "Subscribe"}
               </Button>
             </form>

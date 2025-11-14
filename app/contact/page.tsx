@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { motion } from "framer-motion"
-import { Mail, MapPin, MessageSquare } from "lucide-react"
+import { Mail, MapPin, MessageSquare, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 export default function ContactPage() {
@@ -157,6 +157,7 @@ export default function ContactPage() {
                 </div>
 
                 <Button type="submit" className="bg-amber-700 hover:bg-amber-800 text-white w-full" disabled={loading}>
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {loading ? "Sending..." : "Send Message"}
                 </Button>
               </form>

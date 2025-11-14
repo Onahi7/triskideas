@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Loader2 } from "lucide-react"
 
 export default function AdminLoginPage() {
   const [username, setUsername] = useState("")
@@ -86,6 +87,7 @@ export default function AdminLoginPage() {
               className="w-full bg-amber-700 hover:bg-amber-800 text-white py-6 text-lg"
               disabled={loading}
             >
+              {loading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
               {loading ? "Logging in..." : "Login"}
             </Button>
 

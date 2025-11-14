@@ -8,6 +8,7 @@ import { useAuth } from "@/lib/auth-context"
 import { createPost } from "@/lib/blog-store"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Loader2 } from "lucide-react"
 
 export default function CreatePostPage() {
   const { isAuthenticated } = useAuth()
@@ -150,12 +151,13 @@ export default function CreatePostPage() {
             </label>
           </div>
 
-          <div className="flex gap-4 pt-6 border-t border-gray-200">
+          <div className="flex gap-4 pt-6 border-gray-200">
             <Button
               type="submit"
               className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg flex-1"
               disabled={loading}
             >
+              {loading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
               {loading ? "Creating..." : "Create Post"}
             </Button>
             <Button type="button" variant="outline" onClick={() => router.back()} disabled={loading}>
