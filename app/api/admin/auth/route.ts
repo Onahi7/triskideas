@@ -15,14 +15,14 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Verify credentials using database
+        // Verify credentials using database
     const admin = await verifyAdminCredentials(username, password)
 
     if (admin) {
-      // Create server-side session
-      createAdminSession(admin.username)
+      // Create server-side session (this sets the cookie)
+      await createAdminSession(admin.username)
       
-      const response = NextResponse.json({ 
+      return NextResponse.json({ 
         success: true, 
         message: "Login successful",
         user: {
@@ -32,18 +32,6 @@ export async function POST(request: NextRequest) {
           fullName: admin.fullName
         }
       })
-      
-      // Set secure cookie
-      response.cookies.set({
-        name: "adminAuth",
-        value: "true",
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-      })
-      
-      return response
     }
 
     return NextResponse.json({ 

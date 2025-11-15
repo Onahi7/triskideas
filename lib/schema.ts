@@ -12,6 +12,16 @@ export const adminUsers = pgTable("admin_users", {
   updatedAt: timestamp("updated_at").defaultNow(),
 })
 
+export const adminSessions = pgTable("admin_sessions", {
+  id: serial("id").primaryKey(),
+  adminUserId: integer("admin_user_id")
+    .notNull()
+    .references(() => adminUsers.id, { onDelete: "cascade" }),
+  tokenHash: varchar("token_hash", { length: 255 }).notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+})
+
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
@@ -191,6 +201,8 @@ export const pageLayouts = pgTable("page_layouts", {
 
 export type AdminUser = typeof adminUsers.$inferSelect
 export type InsertAdminUser = typeof adminUsers.$inferInsert
+export type AdminSession = typeof adminSessions.$inferSelect
+export type InsertAdminSession = typeof adminSessions.$inferInsert
 export type User = typeof users.$inferSelect
 export type InsertUser = typeof users.$inferInsert
 export type UserSession = typeof userSessions.$inferSelect

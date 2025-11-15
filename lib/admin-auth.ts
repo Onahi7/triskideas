@@ -2,8 +2,8 @@
 
 import { cookies } from "next/headers"
 import { db } from "@/lib/db"
-import { adminUsers } from "@/lib/schema"
-import { eq } from "drizzle-orm"
+import { adminUsers, adminSessions } from "@/lib/schema"
+import { eq, gt } from "drizzle-orm"
 import crypto from "node:crypto"
 
 const ADMIN_SESSION_COOKIE = "triskideas_admin_session"
@@ -14,9 +14,6 @@ interface AdminSession {
   username: string
   expiresAt: Date
 }
-
-// In-memory session store (consider using Redis in production)
-const adminSessions = new Map<string, AdminSession>()
 
 function hashToken(token: string): string {
   return crypto.createHash("sha256").update(token).digest("hex")
@@ -34,9 +31,10 @@ export async function createAdminSession(username: string): Promise<string | nul
     const hashedToken = hashToken(token)
     const expiresAt = new Date(Date.now() + SESSION_DURATION_MS)
 
-    adminSessions.set(hashedToken, {
-      userId: admin.id,
-      username: admin.username,
+    // Store session in database
+    await db.insert(adminSessions).values({
+      adminUserId: admin.id,
+      tokenHash: hashedToken,
       expiresAt,
     })
 
@@ -66,14 +64,30 @@ export async function getAdminSession(): Promise<AdminSession | null> {
     }
 
     const hashedToken = hashToken(token)
-    const session = adminSessions.get(hashedToken)
+    
+    // Get session from database with admin user info
+    const [sessionData] = await db
+      .select({
+        userId: adminSessions.adminUserId,
+        username: adminUsers.username,
+        expiresAt: adminSessions.expiresAt,
+      })
+      .from(adminSessions)
+      .innerJoin(adminUsers, eq(adminSessions.adminUserId, adminUsers.id))
+      .where(eq(adminSessions.tokenHash, hashedToken))
+      .limit(1)
 
-    if (!session || session.expiresAt < new Date()) {
-      adminSessions.delete(hashedToken)
+    if (!sessionData) {
       return null
     }
 
-    return session
+    // Check if session has expired
+    if (sessionData.expiresAt < new Date()) {
+      await db.delete(adminSessions).where(eq(adminSessions.tokenHash, hashedToken))
+      return null
+    }
+
+    return sessionData
   } catch (error) {
     console.error("Failed to get admin session:", error)
     return null
@@ -87,7 +101,7 @@ export async function deleteAdminSession(): Promise<void> {
 
     if (token) {
       const hashedToken = hashToken(token)
-      adminSessions.delete(hashedToken)
+      await db.delete(adminSessions).where(eq(adminSessions.tokenHash, hashedToken))
     }
 
     cookieStore.delete(ADMIN_SESSION_COOKIE)

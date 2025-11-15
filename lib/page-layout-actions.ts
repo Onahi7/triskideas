@@ -32,7 +32,18 @@ export async function getPageLayout(pageName: string): Promise<PageLayoutRespons
     }
 
     const [layout] = result
-    const sections = JSON.parse(layout.sections || "[]") as PageSection[]
+    let sections: PageSection[] = []
+    
+    try {
+      // Handle empty or malformed sections
+      const sectionsStr = layout.sections?.trim()
+      if (sectionsStr && sectionsStr.length > 0) {
+        sections = JSON.parse(sectionsStr) as PageSection[]
+      }
+    } catch (parseError) {
+      console.error("Error parsing sections JSON:", parseError)
+      sections = []
+    }
 
     return {
       pageName: layout.pageName,
