@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Mail, X, Loader2 } from "lucide-react"
+import { themeClasses } from "@/hooks/use-theme-colors"
 import { useToast } from "@/hooks/use-toast"
 import { shouldShowNewsletterPopup, recordNewsletterPopupShown } from "@/lib/newsletter-popup-actions"
 import { subscribeEmail } from "@/lib/db-actions"
@@ -80,8 +81,8 @@ export function NewsletterPopup() {
         </button>
 
         <DialogHeader>
-          <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
-            <Mail className="text-amber-700" size={24} />
+          <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-theme-accent flex items-center justify-center">
+            <Mail className="text-theme-primary" size={24} />
           </div>
           <DialogTitle className="text-center text-2xl">Stay Connected!</DialogTitle>
           <DialogDescription className="text-center">
@@ -100,7 +101,7 @@ export function NewsletterPopup() {
               className="w-full"
             />
           </div>
-          <Button type="submit" className="w-full bg-amber-700 hover:bg-amber-800" disabled={loading}>
+          <Button type="submit" className={`w-full ${themeClasses.button}`} disabled={loading}>
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {loading ? "Subscribing..." : "Subscribe Now"}
           </Button>

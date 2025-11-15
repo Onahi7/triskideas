@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ArrowLeft, Calendar, MapPin, Users, DollarSign, Loader2 } from "lucide-react"
+import { themeClasses } from "@/hooks/use-theme-colors"
 import { motion } from "framer-motion"
 import { useToast } from "@/hooks/use-toast"
 import { getEventBySlug, type Event } from "@/lib/db-actions"
@@ -108,7 +109,7 @@ export default function EventDetailPage() {
     return (
       <main className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
         <div className="max-w-4xl mx-auto px-4 py-12">
-          <Link href="/events" className="flex items-center gap-2 text-amber-700 hover:text-amber-800 mb-8">
+          <Link href="/events" className={`flex items-center gap-2 ${themeClasses.link} mb-8`}>
             <ArrowLeft size={20} />
             Back to Events
           </Link>
@@ -147,7 +148,7 @@ export default function EventDetailPage() {
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-3">
-                  <Calendar size={20} className="text-amber-700" />
+                  <Calendar size={20} className="text-theme-primary" />
                   <div>
                     <p className="text-sm text-gray-600">Start Date</p>
                     <p className="font-bold text-gray-900">{new Date(event.startDate).toLocaleDateString()}</p>
@@ -200,7 +201,7 @@ export default function EventDetailPage() {
           <div className="flex gap-4">
             <Button
               onClick={() => setShowRegistration(true)}
-              className="bg-amber-700 hover:bg-amber-800 text-white px-8 py-6 text-lg"
+              className={`${themeClasses.button} px-8 py-6 text-lg`}
             >
               Register Now
             </Button>

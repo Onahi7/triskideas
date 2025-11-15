@@ -9,6 +9,7 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
 import { Loader2 } from "lucide-react"
+import { themeClasses } from "@/hooks/use-theme-colors"
 
 export function BlogFooter() {
   const [email, setEmail] = useState("")
@@ -55,7 +56,7 @@ export function BlogFooter() {
   }
 
   return (
-    <footer className="bg-amber-900 text-white mt-20">
+    <footer className={`${themeClasses.bgPrimaryDark} text-white mt-20`}>
       <div className="max-w-6xl mx-auto px-4 py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -117,7 +118,7 @@ export function BlogFooter() {
                 required
                 disabled={loading}
               />
-              <Button type="submit" className="w-full bg-amber-700 hover:bg-amber-600" disabled={loading}>
+              <Button type="submit" className={`w-full ${themeClasses.button}`} disabled={loading}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {subscribed ? "Subscribed!" : loading ? "Subscribing..." : "Subscribe"}
               </Button>

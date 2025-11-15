@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { Analytics } from "@vercel/analytics/next"
 import { AuthProvider } from "@/lib/auth-context"
+import { ColorThemeProvider } from "@/components/color-theme-provider"
 import { generateSEOMetadata, generateOrganizationSchema, generatePersonSchema } from "@/lib/seo-utils"
 import { WebsiteStructuredData, StructuredData } from "@/components/seo/structured-data"
 import "./globals.css"
@@ -89,7 +90,9 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://vitals.vercel-insights.com" />
       </head>
       <body className="font-glacial antialiased">
-        <AuthProvider>{children}</AuthProvider>
+        <ColorThemeProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </ColorThemeProvider>
         <Analytics />
         <WebsiteStructuredData />
         <StructuredData data={organizationSchema} />

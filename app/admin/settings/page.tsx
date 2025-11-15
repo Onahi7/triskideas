@@ -7,9 +7,9 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { getAllSettings, updateSettings } from "@/lib/settings-actions"
-import { SETTING_KEYS } from "@/lib/settings-constants"
+import { SETTING_KEYS, DEFAULT_COLORS } from "@/lib/settings-constants"
 import { ImageUploadModal } from "@/components/image-upload-modal"
-import { Save, Settings } from "lucide-react"
+import { Save, Settings, Palette } from "lucide-react"
 
 export default function AdminSettingsPage() {
   const { toast } = useToast()
@@ -30,11 +30,20 @@ export default function AdminSettingsPage() {
     [SETTING_KEYS.OPAY_PUBLIC_KEY]: "",
     [SETTING_KEYS.OPAY_SECRET_KEY]: "",
     [SETTING_KEYS.OPAY_MERCHANT_ID]: "",
+    [SETTING_KEYS.PRIMARY_COLOR]: DEFAULT_COLORS.PRIMARY_COLOR,
+    [SETTING_KEYS.PRIMARY_DARK_COLOR]: DEFAULT_COLORS.PRIMARY_DARK_COLOR,
+    [SETTING_KEYS.ACCENT_COLOR]: DEFAULT_COLORS.ACCENT_COLOR,
+    [SETTING_KEYS.BACKGROUND_COLOR]: DEFAULT_COLORS.BACKGROUND_COLOR,
   })
 
   useEffect(() => {
     loadSettings()
   }, [])
+
+  useEffect(() => {
+    // Apply color theme when settings load
+    applyColorTheme()
+  }, [settings])
 
   const loadSettings = async () => {
     try {
@@ -65,6 +74,10 @@ export default function AdminSettingsPage() {
 
     try {
       await updateSettings(settings)
+      
+      // Apply color theme immediately
+      applyColorTheme()
+      
       toast({
         title: "Success",
         description: "Settings saved successfully!",
@@ -77,6 +90,16 @@ export default function AdminSettingsPage() {
       })
     } finally {
       setSaving(false)
+    }
+  }
+
+  const applyColorTheme = () => {
+    if (typeof document !== 'undefined') {
+      const root = document.documentElement
+      root.style.setProperty('--color-primary', settings[SETTING_KEYS.PRIMARY_COLOR])
+      root.style.setProperty('--color-primary-dark', settings[SETTING_KEYS.PRIMARY_DARK_COLOR])
+      root.style.setProperty('--color-accent', settings[SETTING_KEYS.ACCENT_COLOR])
+      root.style.setProperty('--color-background', settings[SETTING_KEYS.BACKGROUND_COLOR])
     }
   }
 
@@ -193,6 +216,137 @@ export default function AdminSettingsPage() {
                 placeholder="Short bio for blog posts..."
                 rows={4}
               />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Color Theme Settings */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Palette className="text-amber-700" size={24} />
+              Color Theme
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <p className="text-sm text-gray-600 mb-4">
+              Customize the color scheme of your website. Changes will be applied instantly across all pages.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-900 mb-2">Primary Color</label>
+                <div className="flex gap-3 items-center">
+                  <input
+                    type="color"
+                    value={settings[SETTING_KEYS.PRIMARY_COLOR]}
+                    onChange={(e) => updateSetting(SETTING_KEYS.PRIMARY_COLOR, e.target.value)}
+                    className="h-12 w-20 rounded border border-gray-300 cursor-pointer"
+                  />
+                  <Input
+                    type="text"
+                    value={settings[SETTING_KEYS.PRIMARY_COLOR]}
+                    onChange={(e) => updateSetting(SETTING_KEYS.PRIMARY_COLOR, e.target.value)}
+                    placeholder="#d97706"
+                    className="flex-1"
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Main brand color (buttons, links, accents)</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-900 mb-2">Primary Dark Color</label>
+                <div className="flex gap-3 items-center">
+                  <input
+                    type="color"
+                    value={settings[SETTING_KEYS.PRIMARY_DARK_COLOR]}
+                    onChange={(e) => updateSetting(SETTING_KEYS.PRIMARY_DARK_COLOR, e.target.value)}
+                    className="h-12 w-20 rounded border border-gray-300 cursor-pointer"
+                  />
+                  <Input
+                    type="text"
+                    value={settings[SETTING_KEYS.PRIMARY_DARK_COLOR]}
+                    onChange={(e) => updateSetting(SETTING_KEYS.PRIMARY_DARK_COLOR, e.target.value)}
+                    placeholder="#92400e"
+                    className="flex-1"
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Darker shade for headings and text</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-900 mb-2">Accent Color</label>
+                <div className="flex gap-3 items-center">
+                  <input
+                    type="color"
+                    value={settings[SETTING_KEYS.ACCENT_COLOR]}
+                    onChange={(e) => updateSetting(SETTING_KEYS.ACCENT_COLOR, e.target.value)}
+                    className="h-12 w-20 rounded border border-gray-300 cursor-pointer"
+                  />
+                  <Input
+                    type="text"
+                    value={settings[SETTING_KEYS.ACCENT_COLOR]}
+                    onChange={(e) => updateSetting(SETTING_KEYS.ACCENT_COLOR, e.target.value)}
+                    placeholder="#fed7aa"
+                    className="flex-1"
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Secondary highlight color</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-900 mb-2">Background Color</label>
+                <div className="flex gap-3 items-center">
+                  <input
+                    type="color"
+                    value={settings[SETTING_KEYS.BACKGROUND_COLOR]}
+                    onChange={(e) => updateSetting(SETTING_KEYS.BACKGROUND_COLOR, e.target.value)}
+                    className="h-12 w-20 rounded border border-gray-300 cursor-pointer"
+                  />
+                  <Input
+                    type="text"
+                    value={settings[SETTING_KEYS.BACKGROUND_COLOR]}
+                    onChange={(e) => updateSetting(SETTING_KEYS.BACKGROUND_COLOR, e.target.value)}
+                    placeholder="#fffbeb"
+                    className="flex-1"
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Light background color for sections</p>
+              </div>
+            </div>
+
+            <div className="p-6 rounded-lg border" 
+                 style={{ 
+                   background: `linear-gradient(135deg, ${settings[SETTING_KEYS.BACKGROUND_COLOR]} 0%, ${settings[SETTING_KEYS.ACCENT_COLOR]} 100%)`
+                 }}>
+              <h3 className="text-2xl font-bold mb-2" style={{ color: settings[SETTING_KEYS.PRIMARY_DARK_COLOR] }}>
+                Preview Your Colors
+              </h3>
+              <p className="mb-4" style={{ color: settings[SETTING_KEYS.PRIMARY_DARK_COLOR] }}>
+                This is how your color scheme will look on the website.
+              </p>
+              <button 
+                className="px-6 py-2 rounded text-white font-medium"
+                style={{ backgroundColor: settings[SETTING_KEYS.PRIMARY_COLOR] }}
+              >
+                Sample Button
+              </button>
+            </div>
+
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  updateSetting(SETTING_KEYS.PRIMARY_COLOR, DEFAULT_COLORS.PRIMARY_COLOR)
+                  updateSetting(SETTING_KEYS.PRIMARY_DARK_COLOR, DEFAULT_COLORS.PRIMARY_DARK_COLOR)
+                  updateSetting(SETTING_KEYS.ACCENT_COLOR, DEFAULT_COLORS.ACCENT_COLOR)
+                  updateSetting(SETTING_KEYS.BACKGROUND_COLOR, DEFAULT_COLORS.BACKGROUND_COLOR)
+                }}
+              >
+                Reset to Default Colors
+              </Button>
             </div>
           </CardContent>
         </Card>

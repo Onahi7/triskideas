@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { motion } from "framer-motion"
 import { Mail, MapPin, MessageSquare, Loader2 } from "lucide-react"
+import { themeClasses } from "@/hooks/use-theme-colors"
 import { useToast } from "@/hooks/use-toast"
 
 export default function ContactPage() {
@@ -70,7 +71,7 @@ export default function ContactPage() {
 
       <section className="max-w-4xl mx-auto px-4 py-16">
         <motion.div initial="hidden" animate="visible" variants={containerVariants} className="mb-12">
-          <h1 className="text-5xl font-bold text-amber-900 mb-4">Get In Touch</h1>
+          <h1 className={`text-5xl font-bold ${themeClasses.heading} mb-4`}>Get In Touch</h1>
           <p className="text-xl text-gray-600">Have a question or collaboration idea? I'd love to hear from you.</p>
         </motion.div>
 
@@ -78,7 +79,7 @@ export default function ContactPage() {
           <motion.div variants={itemVariants}>
             <Card className="h-full">
               <CardContent className="pt-6 text-center">
-                <Mail className="w-12 h-12 text-amber-700 mx-auto mb-4" />
+                <Mail className={`w-12 h-12 ${themeClasses.textPrimary} mx-auto mb-4`} />
                 <h3 className="font-semibold text-gray-900 mb-2">Email</h3>
                 <p className="text-gray-600 text-sm">For inquiries and collaboration</p>
               </CardContent>
@@ -88,7 +89,7 @@ export default function ContactPage() {
           <motion.div variants={itemVariants}>
             <Card className="h-full">
               <CardContent className="pt-6 text-center">
-                <MapPin className="w-12 h-12 text-amber-700 mx-auto mb-4" />
+                <MapPin className={`w-12 h-12 ${themeClasses.textPrimary} mx-auto mb-4`} />
                 <h3 className="font-semibold text-gray-900 mb-2">Location</h3>
                 <p className="text-gray-600 text-sm">Jos, Nigeria</p>
               </CardContent>
@@ -98,7 +99,7 @@ export default function ContactPage() {
           <motion.div variants={itemVariants}>
             <Card className="h-full">
               <CardContent className="pt-6 text-center">
-                <MessageSquare className="w-12 h-12 text-amber-700 mx-auto mb-4" />
+                <MessageSquare className={`w-12 h-12 ${themeClasses.textPrimary} mx-auto mb-4`} />
                 <h3 className="font-semibold text-gray-900 mb-2">Response</h3>
                 <p className="text-gray-600 text-sm">I reply within 24 hours</p>
               </CardContent>
@@ -156,7 +157,7 @@ export default function ContactPage() {
                   />
                 </div>
 
-                <Button type="submit" className="bg-amber-700 hover:bg-amber-800 text-white w-full" disabled={loading}>
+                <Button type="submit" className={`${themeClasses.button} w-full`} disabled={loading}>
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {loading ? "Sending..." : "Send Message"}
                 </Button>

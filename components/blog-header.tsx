@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { Menu } from "lucide-react"
 import { useState } from "react"
+import { themeClasses } from "@/hooks/use-theme-colors"
 
 export function BlogHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <header className="bg-white border-b border-amber-100 sticky top-0 z-30 shadow-sm">
+    <header className="bg-white border-b border-theme-accent sticky top-0 z-30 shadow-sm">
       <div className="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
         <Link href="/" className="flex flex-col items-center hover:opacity-80 transition">
           <Image
@@ -22,81 +23,81 @@ export function BlogHeader() {
             className="object-contain"
             priority
           />
-          <p className="text-sm text-amber-700 mt-1">The Mind's Fruit</p>
+          <p className={`text-sm ${themeClasses.textPrimary} mt-1`}>The Mind's Fruit</p>
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
-          <Link href="/" className="text-amber-900 hover:text-amber-700 transition font-medium">
+          <Link href="/" className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}>
             Home
           </Link>
-          <Link href="/blog" className="text-amber-900 hover:text-amber-700 transition font-medium">
+          <Link href="/blog" className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}>
             Articles
           </Link>
-          <Link href="/series" className="text-amber-900 hover:text-amber-700 transition font-medium">
+          <Link href="/series" className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}>
             Series
           </Link>
-          <Link href="/events" className="text-amber-900 hover:text-amber-700 transition font-medium">
+          <Link href="/events" className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}>
             Events
           </Link>
-          <Link href="/about" className="text-amber-900 hover:text-amber-700 transition font-medium">
+          <Link href="/about" className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}>
             About
           </Link>
-          <Link href="/contact" className="text-amber-900 hover:text-amber-700 transition font-medium">
+          <Link href="/contact" className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}>
             Contact
           </Link>
         </nav>
 
         {/* Mobile Menu Button */}
         <button className="md:hidden p-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle menu">
-          <Menu size={24} className="text-amber-900" />
+          <Menu size={24} className={themeClasses.textPrimaryDark} />
         </button>
       </div>
 
       {/* Mobile Navigation */}
       <motion.div
         animate={{ height: mobileMenuOpen ? "auto" : 0 }}
-        className="md:hidden overflow-hidden bg-amber-50 border-t border-amber-100"
+        className={`md:hidden overflow-hidden ${themeClasses.bgBackground} border-t border-theme-accent`}
       >
         <nav className="flex flex-col gap-4 p-4">
           <Link
             href="/"
-            className="text-amber-900 hover:text-amber-700 transition font-medium"
+            className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}
             onClick={() => setMobileMenuOpen(false)}
           >
             Home
           </Link>
           <Link
             href="/blog"
-            className="text-amber-900 hover:text-amber-700 transition font-medium"
+            className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}
             onClick={() => setMobileMenuOpen(false)}
           >
             Articles
           </Link>
           <Link
             href="/series"
-            className="text-amber-900 hover:text-amber-700 transition font-medium"
+            className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}
             onClick={() => setMobileMenuOpen(false)}
           >
             Series
           </Link>
           <Link
             href="/events"
-            className="text-amber-900 hover:text-amber-700 transition font-medium"
+            className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}
             onClick={() => setMobileMenuOpen(false)}
           >
             Events
           </Link>
           <Link
             href="/about"
-            className="text-amber-900 hover:text-amber-700 transition font-medium"
+            className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}
             onClick={() => setMobileMenuOpen(false)}
           >
             About
           </Link>
           <Link
             href="/contact"
-            className="text-amber-900 hover:text-amber-700 transition font-medium"
+            className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}
             onClick={() => setMobileMenuOpen(false)}
           >
             Contact

@@ -3,7 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
-import { LayoutDashboard, FileText, LogOut, Menu, X, Calendar, Mail, Tag, BookOpen, MessageSquare, Users, Settings2 } from "lucide-react"
+import { LayoutDashboard, FileText, LogOut, Menu, X, Calendar, Mail, Tag, BookOpen, MessageSquare, Users, Settings2, Edit } from "lucide-react"
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -20,6 +20,7 @@ export function AdminSidebar() {
     { name: "Categories", path: "/admin/categories", icon: Tag },
     { name: "Comments", path: "/admin/comments", icon: MessageSquare },
     { name: "Subscribers", path: "/admin/subscribers", icon: Users },
+    { name: "Page Editor", path: "/admin/page-editor", icon: Edit },
     { name: "Settings", path: "/admin/settings", icon: Settings2 },
   ]
 

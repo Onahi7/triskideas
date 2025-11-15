@@ -15,4 +15,16 @@ export const SETTING_KEYS = {
   OPAY_PUBLIC_KEY: "opay_public_key",
   OPAY_SECRET_KEY: "opay_secret_key",
   OPAY_MERCHANT_ID: "opay_merchant_id",
+  // Color Theme Settings
+  PRIMARY_COLOR: "primary_color",
+  PRIMARY_DARK_COLOR: "primary_dark_color",
+  ACCENT_COLOR: "accent_color",
+  BACKGROUND_COLOR: "background_color",
+}
+
+export const DEFAULT_COLORS = {
+  PRIMARY_COLOR: "#d97706", // Amber-700
+  PRIMARY_DARK_COLOR: "#92400e", // Amber-900
+  ACCENT_COLOR: "#fed7aa", // Amber-200
+  BACKGROUND_COLOR: "#fffbeb", // Amber-50
 }

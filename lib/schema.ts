@@ -181,6 +181,14 @@ export const siteSettings = pgTable("site_settings", {
   updatedAt: timestamp("updated_at").defaultNow(),
 })
 
+export const pageLayouts = pgTable("page_layouts", {
+  id: serial("id").primaryKey(),
+  pageName: varchar("page_name", { length: 100 }).notNull().unique(),
+  sections: text("sections").notNull().default("[]"), // JSON string of sections
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+})
+
 export type AdminUser = typeof adminUsers.$inferSelect
 export type InsertAdminUser = typeof adminUsers.$inferInsert
 export type User = typeof users.$inferSelect
@@ -209,6 +217,8 @@ export type NewsletterPopup = typeof newsletterPopups.$inferSelect
 export type InsertNewsletterPopup = typeof newsletterPopups.$inferInsert
 export type SiteSetting = typeof siteSettings.$inferSelect
 export type InsertSiteSetting = typeof siteSettings.$inferInsert
+export type PageLayout = typeof pageLayouts.$inferSelect
+export type InsertPageLayout = typeof pageLayouts.$inferInsert
 
 export const insertAdminUserSchema = createInsertSchema(adminUsers)
 export const insertUserSchema = createInsertSchema(users)

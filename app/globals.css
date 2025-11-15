@@ -128,10 +128,65 @@
 
 /* Custom blog colors using design tokens */
 :root {
-  --blog-primary: #b8860b; /* Golden Brown */
-  --blog-primary-dark: #8b6914; /* Darker Gold */
-  --blog-accent: #d4a574; /* Warm Tan */
-  --blog-light: #fef8f0; /* Cream */
+  --color-primary: #d97706; /* Default: Amber-700 */
+  --color-primary-dark: #92400e; /* Default: Amber-900 */
+  --color-accent: #fed7aa; /* Default: Amber-200 */
+  --color-background: #fffbeb; /* Default: Amber-50 */
+  
+  /* Legacy variables for backward compatibility */
+  --blog-primary: var(--color-primary);
+  --blog-primary-dark: var(--color-primary-dark);
+  --blog-accent: var(--color-accent);
+  --blog-light: var(--color-background);
+}
+
+/* Dynamic color utility classes */
+.bg-theme-primary {
+  background-color: var(--color-primary) !important;
+}
+
+.bg-theme-primary-dark {
+  background-color: var(--color-primary-dark) !important;
+}
+
+.bg-theme-accent {
+  background-color: var(--color-accent) !important;
+}
+
+.bg-theme-background {
+  background-color: var(--color-background) !important;
+}
+
+.text-theme-primary {
+  color: var(--color-primary) !important;
+}
+
+.text-theme-primary-dark {
+  color: var(--color-primary-dark) !important;
+}
+
+.text-theme-accent {
+  color: var(--color-accent) !important;
+}
+
+.border-theme-primary {
+  border-color: var(--color-primary) !important;
+}
+
+.border-theme-accent {
+  border-color: var(--color-accent) !important;
+}
+
+.hover\:bg-theme-primary-dark:hover {
+  background-color: var(--color-primary-dark) !important;
+}
+
+.hover\:text-theme-primary:hover {
+  color: var(--color-primary) !important;
+}
+
+.hover\:text-theme-primary-dark:hover {
+  color: var(--color-primary-dark) !important;
 }
 
 /* Added animation keyframes for fade-in effects */
