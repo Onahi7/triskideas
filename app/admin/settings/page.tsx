@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { getAllSettings, updateSettings } from "@/lib/settings-actions"
-import { SETTING_KEYS, DEFAULT_COLORS } from "@/lib/settings-constants"
+import { SETTING_KEYS, DEFAULT_COLORS, COLOR_PRESETS } from "@/lib/settings-constants"
 import { ImageUploadModal } from "@/components/image-upload-modal"
 import { Save, Settings, Palette } from "lucide-react"
 
@@ -32,8 +32,11 @@ export default function AdminSettingsPage() {
     [SETTING_KEYS.OPAY_MERCHANT_ID]: "",
     [SETTING_KEYS.PRIMARY_COLOR]: DEFAULT_COLORS.PRIMARY_COLOR,
     [SETTING_KEYS.PRIMARY_DARK_COLOR]: DEFAULT_COLORS.PRIMARY_DARK_COLOR,
+    [SETTING_KEYS.PRIMARY_LIGHT_COLOR]: DEFAULT_COLORS.PRIMARY_LIGHT_COLOR,
     [SETTING_KEYS.ACCENT_COLOR]: DEFAULT_COLORS.ACCENT_COLOR,
     [SETTING_KEYS.BACKGROUND_COLOR]: DEFAULT_COLORS.BACKGROUND_COLOR,
+    [SETTING_KEYS.TEXT_PRIMARY_COLOR]: DEFAULT_COLORS.TEXT_PRIMARY_COLOR,
+    [SETTING_KEYS.TEXT_SECONDARY_COLOR]: DEFAULT_COLORS.TEXT_SECONDARY_COLOR,
   })
 
   useEffect(() => {
@@ -98,9 +101,30 @@ export default function AdminSettingsPage() {
       const root = document.documentElement
       root.style.setProperty('--color-primary', settings[SETTING_KEYS.PRIMARY_COLOR])
       root.style.setProperty('--color-primary-dark', settings[SETTING_KEYS.PRIMARY_DARK_COLOR])
+      root.style.setProperty('--color-primary-light', settings[SETTING_KEYS.PRIMARY_LIGHT_COLOR])
       root.style.setProperty('--color-accent', settings[SETTING_KEYS.ACCENT_COLOR])
       root.style.setProperty('--color-background', settings[SETTING_KEYS.BACKGROUND_COLOR])
+      root.style.setProperty('--color-text-primary', settings[SETTING_KEYS.TEXT_PRIMARY_COLOR])
+      root.style.setProperty('--color-text-secondary', settings[SETTING_KEYS.TEXT_SECONDARY_COLOR])
     }
+  }
+
+  const applyPreset = (presetKey: keyof typeof COLOR_PRESETS) => {
+    const preset = COLOR_PRESETS[presetKey]
+    setSettings(prev => ({
+      ...prev,
+      [SETTING_KEYS.PRIMARY_COLOR]: preset.colors.PRIMARY_COLOR,
+      [SETTING_KEYS.PRIMARY_DARK_COLOR]: preset.colors.PRIMARY_DARK_COLOR,
+      [SETTING_KEYS.PRIMARY_LIGHT_COLOR]: preset.colors.PRIMARY_LIGHT_COLOR,
+      [SETTING_KEYS.ACCENT_COLOR]: preset.colors.ACCENT_COLOR,
+      [SETTING_KEYS.BACKGROUND_COLOR]: preset.colors.BACKGROUND_COLOR,
+      [SETTING_KEYS.TEXT_PRIMARY_COLOR]: preset.colors.TEXT_PRIMARY_COLOR,
+      [SETTING_KEYS.TEXT_SECONDARY_COLOR]: preset.colors.TEXT_SECONDARY_COLOR,
+    }))
+    toast({
+      title: "Preset Applied",
+      description: `${preset.name} color scheme applied. Click Save to keep changes.`,
+    })
   }
 
   const updateSetting = (key: string, value: string) => {
@@ -225,112 +249,234 @@ export default function AdminSettingsPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Palette className="text-amber-700" size={24} />
-              Color Theme
+              Professional Color Theme (7 Colors)
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <p className="text-sm text-gray-600 mb-4">
-              Customize the color scheme of your website. Changes will be applied instantly across all pages.
+              Choose from professional presets or customize your own 7-color palette. Changes apply instantly across all pages.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-900 mb-2">Primary Color</label>
-                <div className="flex gap-3 items-center">
-                  <input
-                    type="color"
-                    value={settings[SETTING_KEYS.PRIMARY_COLOR]}
-                    onChange={(e) => updateSetting(SETTING_KEYS.PRIMARY_COLOR, e.target.value)}
-                    className="h-12 w-20 rounded border border-gray-300 cursor-pointer"
-                  />
-                  <Input
-                    type="text"
-                    value={settings[SETTING_KEYS.PRIMARY_COLOR]}
-                    onChange={(e) => updateSetting(SETTING_KEYS.PRIMARY_COLOR, e.target.value)}
-                    placeholder="#d97706"
-                    className="flex-1"
-                  />
-                </div>
-                <p className="text-xs text-gray-500 mt-1">Main brand color (buttons, links, accents)</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-900 mb-2">Primary Dark Color</label>
-                <div className="flex gap-3 items-center">
-                  <input
-                    type="color"
-                    value={settings[SETTING_KEYS.PRIMARY_DARK_COLOR]}
-                    onChange={(e) => updateSetting(SETTING_KEYS.PRIMARY_DARK_COLOR, e.target.value)}
-                    className="h-12 w-20 rounded border border-gray-300 cursor-pointer"
-                  />
-                  <Input
-                    type="text"
-                    value={settings[SETTING_KEYS.PRIMARY_DARK_COLOR]}
-                    onChange={(e) => updateSetting(SETTING_KEYS.PRIMARY_DARK_COLOR, e.target.value)}
-                    placeholder="#92400e"
-                    className="flex-1"
-                  />
-                </div>
-                <p className="text-xs text-gray-500 mt-1">Darker shade for headings and text</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-900 mb-2">Accent Color</label>
-                <div className="flex gap-3 items-center">
-                  <input
-                    type="color"
-                    value={settings[SETTING_KEYS.ACCENT_COLOR]}
-                    onChange={(e) => updateSetting(SETTING_KEYS.ACCENT_COLOR, e.target.value)}
-                    className="h-12 w-20 rounded border border-gray-300 cursor-pointer"
-                  />
-                  <Input
-                    type="text"
-                    value={settings[SETTING_KEYS.ACCENT_COLOR]}
-                    onChange={(e) => updateSetting(SETTING_KEYS.ACCENT_COLOR, e.target.value)}
-                    placeholder="#fed7aa"
-                    className="flex-1"
-                  />
-                </div>
-                <p className="text-xs text-gray-500 mt-1">Secondary highlight color</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-900 mb-2">Background Color</label>
-                <div className="flex gap-3 items-center">
-                  <input
-                    type="color"
-                    value={settings[SETTING_KEYS.BACKGROUND_COLOR]}
-                    onChange={(e) => updateSetting(SETTING_KEYS.BACKGROUND_COLOR, e.target.value)}
-                    className="h-12 w-20 rounded border border-gray-300 cursor-pointer"
-                  />
-                  <Input
-                    type="text"
-                    value={settings[SETTING_KEYS.BACKGROUND_COLOR]}
-                    onChange={(e) => updateSetting(SETTING_KEYS.BACKGROUND_COLOR, e.target.value)}
-                    placeholder="#fffbeb"
-                    className="flex-1"
-                  />
-                </div>
-                <p className="text-xs text-gray-500 mt-1">Light background color for sections</p>
+            {/* Color Presets */}
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-3">Quick Presets</label>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {Object.entries(COLOR_PRESETS).map(([key, preset]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => applyPreset(key as keyof typeof COLOR_PRESETS)}
+                    className="p-3 border-2 border-gray-200 rounded-lg hover:border-gray-400 transition group"
+                  >
+                    <div className="flex gap-1 mb-2">
+                      <div 
+                        className="w-6 h-6 rounded" 
+                        style={{ backgroundColor: preset.colors.PRIMARY_COLOR }}
+                      />
+                      <div 
+                        className="w-6 h-6 rounded" 
+                        style={{ backgroundColor: preset.colors.PRIMARY_DARK_COLOR }}
+                      />
+                      <div 
+                        className="w-6 h-6 rounded" 
+                        style={{ backgroundColor: preset.colors.ACCENT_COLOR }}
+                      />
+                    </div>
+                    <p className="text-xs font-medium text-gray-700 group-hover:text-gray-900">
+                      {preset.name}
+                    </p>
+                  </button>
+                ))}
               </div>
             </div>
 
+            {/* Custom Colors */}
+            <div className="border-t pt-6">
+              <h4 className="text-sm font-medium text-gray-900 mb-4">Custom Color Palette</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Primary Color */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">Primary Color</label>
+                  <div className="flex gap-3 items-center">
+                    <input
+                      type="color"
+                      value={settings[SETTING_KEYS.PRIMARY_COLOR]}
+                      onChange={(e) => updateSetting(SETTING_KEYS.PRIMARY_COLOR, e.target.value)}
+                      className="h-12 w-20 rounded border border-gray-300 cursor-pointer"
+                    />
+                    <Input
+                      type="text"
+                      value={settings[SETTING_KEYS.PRIMARY_COLOR]}
+                      onChange={(e) => updateSetting(SETTING_KEYS.PRIMARY_COLOR, e.target.value)}
+                      placeholder="#d97706"
+                      className="flex-1"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Main brand color (buttons, CTAs)</p>
+                </div>
+
+                {/* Primary Dark */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">Primary Dark</label>
+                  <div className="flex gap-3 items-center">
+                    <input
+                      type="color"
+                      value={settings[SETTING_KEYS.PRIMARY_DARK_COLOR]}
+                      onChange={(e) => updateSetting(SETTING_KEYS.PRIMARY_DARK_COLOR, e.target.value)}
+                      className="h-12 w-20 rounded border border-gray-300 cursor-pointer"
+                    />
+                    <Input
+                      type="text"
+                      value={settings[SETTING_KEYS.PRIMARY_DARK_COLOR]}
+                      onChange={(e) => updateSetting(SETTING_KEYS.PRIMARY_DARK_COLOR, e.target.value)}
+                      placeholder="#92400e"
+                      className="flex-1"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Hover states, active elements</p>
+                </div>
+
+                {/* Primary Light */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">Primary Light</label>
+                  <div className="flex gap-3 items-center">
+                    <input
+                      type="color"
+                      value={settings[SETTING_KEYS.PRIMARY_LIGHT_COLOR]}
+                      onChange={(e) => updateSetting(SETTING_KEYS.PRIMARY_LIGHT_COLOR, e.target.value)}
+                      className="h-12 w-20 rounded border border-gray-300 cursor-pointer"
+                    />
+                    <Input
+                      type="text"
+                      value={settings[SETTING_KEYS.PRIMARY_LIGHT_COLOR]}
+                      onChange={(e) => updateSetting(SETTING_KEYS.PRIMARY_LIGHT_COLOR, e.target.value)}
+                      placeholder="#fef3c7"
+                      className="flex-1"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Light backgrounds, subtle highlights</p>
+                </div>
+
+                {/* Accent */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">Accent Color</label>
+                  <div className="flex gap-3 items-center">
+                    <input
+                      type="color"
+                      value={settings[SETTING_KEYS.ACCENT_COLOR]}
+                      onChange={(e) => updateSetting(SETTING_KEYS.ACCENT_COLOR, e.target.value)}
+                      className="h-12 w-20 rounded border border-gray-300 cursor-pointer"
+                    />
+                    <Input
+                      type="text"
+                      value={settings[SETTING_KEYS.ACCENT_COLOR]}
+                      onChange={(e) => updateSetting(SETTING_KEYS.ACCENT_COLOR, e.target.value)}
+                      placeholder="#fed7aa"
+                      className="flex-1"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Secondary highlights, badges</p>
+                </div>
+
+                {/* Background */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">Background Color</label>
+                  <div className="flex gap-3 items-center">
+                    <input
+                      type="color"
+                      value={settings[SETTING_KEYS.BACKGROUND_COLOR]}
+                      onChange={(e) => updateSetting(SETTING_KEYS.BACKGROUND_COLOR, e.target.value)}
+                      className="h-12 w-20 rounded border border-gray-300 cursor-pointer"
+                    />
+                    <Input
+                      type="text"
+                      value={settings[SETTING_KEYS.BACKGROUND_COLOR]}
+                      onChange={(e) => updateSetting(SETTING_KEYS.BACKGROUND_COLOR, e.target.value)}
+                      placeholder="#fffbeb"
+                      className="flex-1"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Page background, section fills</p>
+                </div>
+
+                {/* Text Primary */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">Text Primary</label>
+                  <div className="flex gap-3 items-center">
+                    <input
+                      type="color"
+                      value={settings[SETTING_KEYS.TEXT_PRIMARY_COLOR]}
+                      onChange={(e) => updateSetting(SETTING_KEYS.TEXT_PRIMARY_COLOR, e.target.value)}
+                      className="h-12 w-20 rounded border border-gray-300 cursor-pointer"
+                    />
+                    <Input
+                      type="text"
+                      value={settings[SETTING_KEYS.TEXT_PRIMARY_COLOR]}
+                      onChange={(e) => updateSetting(SETTING_KEYS.TEXT_PRIMARY_COLOR, e.target.value)}
+                      placeholder="#111827"
+                      className="flex-1"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Main text, headings</p>
+                </div>
+
+                {/* Text Secondary */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">Text Secondary</label>
+                  <div className="flex gap-3 items-center">
+                    <input
+                      type="color"
+                      value={settings[SETTING_KEYS.TEXT_SECONDARY_COLOR]}
+                      onChange={(e) => updateSetting(SETTING_KEYS.TEXT_SECONDARY_COLOR, e.target.value)}
+                      className="h-12 w-20 rounded border border-gray-300 cursor-pointer"
+                    />
+                    <Input
+                      type="text"
+                      value={settings[SETTING_KEYS.TEXT_SECONDARY_COLOR]}
+                      onChange={(e) => updateSetting(SETTING_KEYS.TEXT_SECONDARY_COLOR, e.target.value)}
+                      placeholder="#6b7280"
+                      className="flex-1"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Descriptions, captions, meta text</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Color Preview */}
             <div className="p-6 rounded-lg border" 
                  style={{ 
-                   background: `linear-gradient(135deg, ${settings[SETTING_KEYS.BACKGROUND_COLOR]} 0%, ${settings[SETTING_KEYS.ACCENT_COLOR]} 100%)`
+                   background: `linear-gradient(135deg, ${settings[SETTING_KEYS.BACKGROUND_COLOR]} 0%, ${settings[SETTING_KEYS.PRIMARY_LIGHT_COLOR]} 100%)`
                  }}>
-              <h3 className="text-2xl font-bold mb-2" style={{ color: settings[SETTING_KEYS.PRIMARY_DARK_COLOR] }}>
-                Preview Your Colors
+              <h3 className="text-2xl font-bold mb-2" style={{ color: settings[SETTING_KEYS.TEXT_PRIMARY_COLOR] }}>
+                Color Preview
               </h3>
-              <p className="mb-4" style={{ color: settings[SETTING_KEYS.PRIMARY_DARK_COLOR] }}>
-                This is how your color scheme will look on the website.
+              <p className="mb-4" style={{ color: settings[SETTING_KEYS.TEXT_SECONDARY_COLOR] }}>
+                This is how your professional color palette will look on the website.
               </p>
-              <button 
-                className="px-6 py-2 rounded text-white font-medium"
-                style={{ backgroundColor: settings[SETTING_KEYS.PRIMARY_COLOR] }}
-              >
-                Sample Button
-              </button>
+              <div className="flex gap-3 flex-wrap">
+                <button 
+                  className="px-6 py-2 rounded text-white font-medium"
+                  style={{ backgroundColor: settings[SETTING_KEYS.PRIMARY_COLOR] }}
+                >
+                  Primary Button
+                </button>
+                <button 
+                  className="px-6 py-2 rounded text-white font-medium"
+                  style={{ backgroundColor: settings[SETTING_KEYS.PRIMARY_DARK_COLOR] }}
+                >
+                  Dark Button
+                </button>
+                <span 
+                  className="px-4 py-2 rounded font-medium"
+                  style={{ 
+                    backgroundColor: settings[SETTING_KEYS.ACCENT_COLOR],
+                    color: settings[SETTING_KEYS.PRIMARY_DARK_COLOR]
+                  }}
+                >
+                  Accent Badge
+                </span>
+              </div>
             </div>
 
             <div className="flex gap-2">

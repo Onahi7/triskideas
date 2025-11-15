@@ -55,12 +55,12 @@ function HeroContent({ title, subtitle, description }: { title: string; subtitle
     <motion.div variants={itemVariants} className="space-y-8">
       <div>
         <motion.h2
-          className="text-5xl md:text-6xl font-bold text-amber-900 mb-4 text-balance leading-tight"
+          className="text-5xl md:text-6xl font-bold text-theme-text-primary mb-4 text-balance leading-tight"
           variants={itemVariants}
         >
           {title}
         </motion.h2>
-        <motion.p className="text-xl text-amber-700 mb-2 font-semibold" variants={itemVariants}>
+        <motion.p className="text-xl text-theme-primary mb-2 font-semibold" variants={itemVariants}>
           {subtitle}
         </motion.p>
       </div>
@@ -76,14 +76,14 @@ function HeroContent({ title, subtitle, description }: { title: string; subtitle
 
       <motion.div variants={itemVariants} className="flex flex-wrap gap-4">
         <Link href="/blog">
-          <Button className="bg-amber-700 hover:bg-amber-800 text-white px-8 py-6 text-lg rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+          <Button className="bg-theme-primary hover:bg-theme-primary-dark text-white px-8 py-6 text-lg rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
             Read Articles
           </Button>
         </Link>
         <Link href="/about">
           <Button
             variant="outline"
-            className="border-2 border-amber-700 text-amber-700 hover:bg-amber-50 px-8 py-6 text-lg rounded-lg bg-transparent"
+            className="border-2 border-theme-primary text-theme-primary hover:bg-theme-primary-light px-8 py-6 text-lg rounded-lg bg-transparent"
           >
             Learn More
           </Button>
@@ -169,12 +169,12 @@ function FeaturedPosts({ posts }: { posts: Post[] }) {
                       </div>
                     </div>
                     <div className="p-8 flex flex-col grow">
-                      <h4 className="text-xl font-bold text-amber-900 mb-3 group-hover:text-amber-700 transition line-clamp-2">
+                      <h4 className="text-xl font-bold text-theme-text-primary mb-3 group-hover:text-theme-primary transition line-clamp-2">
                         {post.title}
                       </h4>
-                      <p className="text-gray-600 mb-4 leading-relaxed grow line-clamp-3">{post.excerpt}</p>
-                      <div className="flex items-center justify-between pt-4 border-t border-amber-100 mt-auto">
-                        <span className="text-sm text-amber-700 font-medium">
+                      <p className="text-gray-700 leading-relaxed line-clamp-3 mb-4">{post.excerpt}</p>
+                      <div className="flex items-center justify-between pt-4 border-t border-theme-primary-light mt-auto">
+                        <span className="text-sm text-theme-primary font-medium">
                           {post.publishedAt
                             ? new Date(post.publishedAt).toLocaleDateString("en-US", {
                                 year: "numeric",
@@ -318,18 +318,18 @@ function EventsSection({ eventsList }: { eventsList: Event[] }) {
                           className="object-cover transition-transform duration-500 group-hover:scale-110"
                         />
                       </div>
-                      <div className="absolute top-4 right-4 bg-amber-700 text-white px-3 py-1 rounded-full text-sm font-semibold capitalize">
+                      <div className="absolute top-4 right-4 bg-theme-primary text-white px-3 py-1 rounded-full text-sm font-semibold capitalize">
                         {event.eventType}
                       </div>
                     </div>
-                    <div className="p-8 flex flex-col grow">
-                      <h4 className="text-xl font-bold text-amber-900 mb-3 group-hover:text-amber-700 transition line-clamp-2">
+                    <div className="p-6 flex flex-col flex-1">
+                      <h4 className="text-xl font-bold text-theme-text-primary mb-3 group-hover:text-theme-primary transition line-clamp-2">
                         {event.title}
                       </h4>
-                      <p className="text-gray-600 mb-4 leading-relaxed grow line-clamp-3">{event.description}</p>
-                      <div className="flex flex-col gap-2 pt-4 border-t border-amber-100 mt-auto">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-amber-700 font-medium">
+                      <p className="text-gray-700 leading-relaxed line-clamp-3 mb-4">{event.description}</p>
+                      <div className="flex flex-col gap-2 pt-4 border-t border-theme-primary-light mt-auto">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-theme-primary font-medium">
                             {new Date(event.startDate).toLocaleDateString("en-US", {
                               year: "numeric",
                               month: "long",

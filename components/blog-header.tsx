@@ -6,10 +6,29 @@ import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { Menu } from "lucide-react"
 import { useState } from "react"
+import { usePathname } from "next/navigation"
 import { themeClasses } from "@/hooks/use-theme-colors"
 
 export function BlogHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const pathname = usePathname()
+
+  const isActive = (path: string) => {
+    if (path === "/") return pathname === "/"
+    return pathname.startsWith(path)
+  }
+
+  const getNavLinkClass = (path: string) => {
+    return isActive(path)
+      ? `${themeClasses.textPrimary} font-semibold border-b-2 border-theme-primary pb-1`
+      : `${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`
+  }
+
+  const getMobileNavLinkClass = (path: string) => {
+    return isActive(path)
+      ? `${themeClasses.textPrimary} font-semibold bg-theme-primary-light px-3 py-2 rounded-lg`
+      : `${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium px-3 py-2`
+  }
 
   return (
     <header className="bg-white border-b border-theme-accent sticky top-0 z-30 shadow-sm">
@@ -28,22 +47,22 @@ export function BlogHeader() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
-          <Link href="/" className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}>
+          <Link href="/" className={getNavLinkClass("/")}>
             Home
           </Link>
-          <Link href="/blog" className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}>
+          <Link href="/blog" className={getNavLinkClass("/blog")}>
             Articles
           </Link>
-          <Link href="/series" className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}>
+          <Link href="/series" className={getNavLinkClass("/series")}>
             Series
           </Link>
-          <Link href="/events" className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}>
+          <Link href="/events" className={getNavLinkClass("/events")}>
             Events
           </Link>
-          <Link href="/about" className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}>
+          <Link href="/about" className={getNavLinkClass("/about")}>
             About
           </Link>
-          <Link href="/contact" className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}>
+          <Link href="/contact" className={getNavLinkClass("/contact")}>
             Contact
           </Link>
         </nav>
@@ -59,45 +78,45 @@ export function BlogHeader() {
         animate={{ height: mobileMenuOpen ? "auto" : 0 }}
         className={`md:hidden overflow-hidden ${themeClasses.bgBackground} border-t border-theme-accent`}
       >
-        <nav className="flex flex-col gap-4 p-4">
+        <nav className="flex flex-col gap-2 p-4">
           <Link
             href="/"
-            className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}
+            className={getMobileNavLinkClass("/")}
             onClick={() => setMobileMenuOpen(false)}
           >
             Home
           </Link>
           <Link
             href="/blog"
-            className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}
+            className={getMobileNavLinkClass("/blog")}
             onClick={() => setMobileMenuOpen(false)}
           >
             Articles
           </Link>
           <Link
             href="/series"
-            className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}
+            className={getMobileNavLinkClass("/series")}
             onClick={() => setMobileMenuOpen(false)}
           >
             Series
           </Link>
           <Link
             href="/events"
-            className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}
+            className={getMobileNavLinkClass("/events")}
             onClick={() => setMobileMenuOpen(false)}
           >
             Events
           </Link>
           <Link
             href="/about"
-            className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}
+            className={getMobileNavLinkClass("/about")}
             onClick={() => setMobileMenuOpen(false)}
           >
             About
           </Link>
           <Link
             href="/contact"
-            className={`${themeClasses.textPrimaryDark} ${themeClasses.hoverTextPrimary} transition font-medium`}
+            className={getMobileNavLinkClass("/contact")}
             onClick={() => setMobileMenuOpen(false)}
           >
             Contact

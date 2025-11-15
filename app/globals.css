@@ -126,12 +126,20 @@
   }
 }
 
-/* Custom blog colors using design tokens */
+/* Custom blog colors using design tokens - Professional 7-Color Palette */
 :root {
-  --color-primary: #d97706; /* Default: Amber-700 */
-  --color-primary-dark: #92400e; /* Default: Amber-900 */
-  --color-accent: #fed7aa; /* Default: Amber-200 */
-  --color-background: #fffbeb; /* Default: Amber-50 */
+  /* Primary colors */
+  --color-primary: #d97706; /* Main brand color (buttons, CTAs) */
+  --color-primary-dark: #92400e; /* Hover states, active elements */
+  --color-primary-light: #fef3c7; /* Light backgrounds, subtle highlights */
+  
+  /* Supporting colors */
+  --color-accent: #fed7aa; /* Secondary highlights, badges */
+  --color-background: #fffbeb; /* Page background, section fills */
+  
+  /* Text colors */
+  --color-text-primary: #111827; /* Main text, headings */
+  --color-text-secondary: #6b7280; /* Descriptions, captions, meta text */
   
   /* Legacy variables for backward compatibility */
   --blog-primary: var(--color-primary);
@@ -140,13 +148,165 @@
   --blog-light: var(--color-background);
 }
 
-/* Dynamic color utility classes */
+/* Override hardcoded Tailwind amber colors with dynamic theme colors */
+/* This makes existing bg-amber-X classes respect your theme settings */
+.bg-amber-700, .hover\:bg-amber-700:hover {
+  background-color: var(--color-primary) !important;
+}
+
+.bg-amber-800, .hover\:bg-amber-800:hover {
+  background-color: var(--color-primary-dark) !important;
+}
+
+.bg-amber-900 {
+  background-color: var(--color-primary-dark) !important;
+}
+
+.bg-amber-50, .hover\:bg-amber-50:hover {
+  background-color: var(--color-primary-light) !important;
+}
+
+.bg-amber-100 {
+  background-color: var(--color-accent) !important;
+}
+
+.bg-amber-200 {
+  background-color: var(--color-accent) !important;
+}
+
+.text-amber-700, .hover\:text-amber-700:hover {
+  color: var(--color-primary) !important;
+}
+
+.text-amber-800, .hover\:text-amber-800:hover {
+  color: var(--color-primary-dark) !important;
+}
+
+.text-amber-900 {
+  color: var(--color-text-primary) !important;
+}
+
+.text-amber-50 {
+  color: var(--color-primary-light) !important;
+}
+
+.text-amber-100 {
+  color: var(--color-accent) !important;
+}
+
+.text-amber-200 {
+  color: var(--color-accent) !important;
+}
+
+.text-amber-300 {
+  color: var(--color-accent) !important;
+}
+
+.border-amber-100 {
+  border-color: var(--color-primary-light) !important;
+}
+
+.border-amber-200, .border-amber-300 {
+  border-color: var(--color-accent) !important;
+}
+
+.border-amber-500, .border-amber-700 {
+  border-color: var(--color-primary) !important;
+}
+
+.border-amber-800 {
+  border-color: var(--color-primary-dark) !important;
+}
+
+/* Gradient color overrides for from-amber-*, to-amber-*, via-amber-* */
+.from-amber-50 {
+  --tw-gradient-from: var(--color-primary-light) !important;
+  --tw-gradient-to: rgb(254 243 199 / 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.from-amber-100 {
+  --tw-gradient-from: var(--color-accent) !important;
+  --tw-gradient-to: rgb(254 215 170 / 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.from-amber-200 {
+  --tw-gradient-from: var(--color-accent) !important;
+  --tw-gradient-to: rgb(254 215 170 / 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.from-amber-700 {
+  --tw-gradient-from: var(--color-primary) !important;
+  --tw-gradient-to: rgb(217 119 6 / 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.from-amber-900 {
+  --tw-gradient-from: var(--color-primary-dark) !important;
+  --tw-gradient-to: rgb(146 64 14 / 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.to-amber-50 {
+  --tw-gradient-to: var(--color-primary-light) !important;
+}
+
+.to-amber-100 {
+  --tw-gradient-to: var(--color-accent) !important;
+}
+
+.to-amber-200 {
+  --tw-gradient-to: var(--color-accent) !important;
+}
+
+.to-amber-700 {
+  --tw-gradient-to: var(--color-primary) !important;
+}
+
+.to-amber-800 {
+  --tw-gradient-to: var(--color-primary-dark) !important;
+}
+
+.to-amber-950 {
+  --tw-gradient-to: var(--color-primary-dark) !important;
+}
+
+.via-amber-100 {
+  --tw-gradient-to: rgb(254 215 170 / 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--color-accent), var(--tw-gradient-to) !important;
+}
+
+/* Override yellow gradient classes to also use theme colors for cohesive gradients */
+.to-yellow-50 {
+  --tw-gradient-to: var(--color-background) !important;
+}
+
+.to-yellow-100 {
+  --tw-gradient-to: var(--color-accent) !important;
+}
+
+.to-yellow-200 {
+  --tw-gradient-to: var(--color-accent) !important;
+}
+
+.via-orange-50 {
+  --tw-gradient-to: rgb(255 251 235 / 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--color-background), var(--tw-gradient-to) !important;
+}
+
+/* Dynamic color utility classes - Professional 7-Color System */
 .bg-theme-primary {
   background-color: var(--color-primary) !important;
 }
 
 .bg-theme-primary-dark {
   background-color: var(--color-primary-dark) !important;
+}
+
+.bg-theme-primary-light {
+  background-color: var(--color-primary-light) !important;
 }
 
 .bg-theme-accent {
@@ -165,6 +325,14 @@
   color: var(--color-primary-dark) !important;
 }
 
+.text-theme-text-primary {
+  color: var(--color-text-primary) !important;
+}
+
+.text-theme-text-secondary {
+  color: var(--color-text-secondary) !important;
+}
+
 .text-theme-accent {
   color: var(--color-accent) !important;
 }
@@ -173,12 +341,20 @@
   border-color: var(--color-primary) !important;
 }
 
+.border-theme-primary-light {
+  border-color: var(--color-primary-light) !important;
+}
+
 .border-theme-accent {
   border-color: var(--color-accent) !important;
 }
 
 .hover\:bg-theme-primary-dark:hover {
   background-color: var(--color-primary-dark) !important;
+}
+
+.hover\:bg-theme-primary-light:hover {
+  background-color: var(--color-primary-light) !important;
 }
 
 .hover\:text-theme-primary:hover {
