@@ -186,7 +186,7 @@ export default function ManagePostsPage() {
                       <span>by {post.author}</span>
                       <span>Views: {post.viewCount || 0}</span>
                       <span>
-                        {new Date(post.publishedAt).toLocaleDateString("en-US", {
+                        {post.publishedAt && new Date(post.publishedAt).toLocaleDateString("en-US", {
                           year: "numeric",
                           month: "short",
                           day: "numeric",
