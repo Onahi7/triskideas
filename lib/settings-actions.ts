@@ -41,6 +41,11 @@ export async function getAllSettings(): Promise<SiteSetting[]> {
     return await db.select().from(siteSettings)
   } catch (error) {
     console.error("Error getting all settings:", error)
+    // If table doesn't exist, return empty array
+    if (error instanceof Error && error.message.includes("does not exist")) {
+      console.warn("site_settings table does not exist. Please run initialization.")
+      return []
+    }
     return []
   }
 }
@@ -71,12 +76,45 @@ export async function updateSetting(key: string, value: string): Promise<void> {
 // Update multiple settings at once
 export async function updateSettings(settings: Record<string, string>): Promise<void> {
   await requireAdminAuth()
+  
   try {
+    // Get all existing settings in one query
+    const existingSettings = await db.select().from(siteSettings)
+    const existingKeys = new Set(existingSettings.map(s => s.key))
+    
+    // Prepare updates and inserts
+    const updates: Promise<any>[] = []
+    const inserts: { key: string; value: string }[] = []
+    
     for (const [key, value] of Object.entries(settings)) {
-      await updateSetting(key, value)
+      if (existingKeys.has(key)) {
+        // Update existing
+        updates.push(
+          db
+            .update(siteSettings)
+            .set({ value, updatedAt: new Date() })
+            .where(eq(siteSettings.key, key))
+        )
+      } else {
+        // Queue for insert
+        inserts.push({ key, value })
+      }
     }
+    
+    // Execute all updates in parallel
+    if (updates.length > 0) {
+      await Promise.all(updates)
+    }
+    
+    // Batch insert new settings
+    if (inserts.length > 0) {
+      await db.insert(siteSettings).values(inserts)
+    }
+    
+    revalidatePath("/")
+    revalidatePath("/about")
   } catch (error) {
     console.error("Error updating settings:", error)
-    throw error
+    throw new Error(`Failed to update settings: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
