@@ -20,8 +20,14 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     }
   }
 
-  // Use custom post image if available, otherwise use dynamic OG image
-  const ogImageUrl = post.imageUrl || `/api/og/blog/${slug}`
+  // Ensure absolute URL for images (WhatsApp requires this)
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://triskideas.com'
+  let ogImageUrl = post.imageUrl || `/api/og/blog/${slug}`
+  
+  // Make sure image URL is absolute
+  if (ogImageUrl && !ogImageUrl.startsWith('http')) {
+    ogImageUrl = `${baseUrl}${ogImageUrl}`
+  }
 
   return generateSEOMetadata({
     title: post.title,
@@ -31,7 +37,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     image: ogImageUrl,
     url: `/blog/${post.slug}`,
     type: "article",
-    publishedTime: new Date(post.createdAt).toISOString(),
+    publishedTime: post.publishedAt ? new Date(post.publishedAt).toISOString() : new Date(post.createdAt).toISOString(),
     modifiedTime: post.updatedAt ? new Date(post.updatedAt).toISOString() : undefined,
     section: post.category || "Blog",
     tags: post.category ? [post.category] : []

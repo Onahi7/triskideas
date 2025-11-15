@@ -29,6 +29,7 @@ export default function NewPostPage() {
     readTimeMinutes: 5,
     featured: false,
     published: false,
+    publishedAt: new Date().toISOString().slice(0, 16),
     seoDescription: "",
   })
 
@@ -65,6 +66,7 @@ export default function NewPostPage() {
         readTimeMinutes: formData.readTimeMinutes,
         featured: formData.featured,
         published: formData.published,
+        publishedAt: formData.published ? new Date(formData.publishedAt) : null,
         seoDescription: formData.seoDescription,
       })
 
@@ -108,7 +110,7 @@ export default function NewPostPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-900 mb-2">Category</label>
                 <Input
@@ -124,6 +126,14 @@ export default function NewPostPage() {
                   min="1"
                   value={formData.readTimeMinutes}
                   onChange={(e) => setFormData({ ...formData, readTimeMinutes: Number.parseInt(e.target.value) })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-900 mb-2">Publish Date & Time</label>
+                <Input
+                  type="datetime-local"
+                  value={formData.publishedAt}
+                  onChange={(e) => setFormData({ ...formData, publishedAt: e.target.value })}
                 />
               </div>
             </div>

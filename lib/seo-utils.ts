@@ -44,6 +44,9 @@ export function generateSEOMetadata(config: SEOConfig): Metadata {
   const fullTitle = title === DEFAULT_CONFIG.defaultTitle ? title : `${title} | ${DEFAULT_CONFIG.siteName}`
   const fullUrl = url.startsWith('http') ? url : `${DEFAULT_CONFIG.siteUrl}${url}`
   const fullImage = image.startsWith('http') ? image : `${DEFAULT_CONFIG.siteUrl}${image}`
+  
+  // Ensure HTTPS for secure image URL (required by WhatsApp)
+  const secureImageUrl = fullImage.replace(/^http:/, 'https:')
 
   const metadata: Metadata = {
     title: fullTitle,
@@ -65,11 +68,12 @@ export function generateSEOMetadata(config: SEOConfig): Metadata {
       // Additional Open Graph tags
       'og:image:width': '1200',
       'og:image:height': '630',
-      'og:image:type': 'image/png',
+      'og:image:type': 'image/jpeg',
+      'og:image:secure_url': secureImageUrl,
       'og:locale': DEFAULT_CONFIG.locale,
       'og:site_name': DEFAULT_CONFIG.siteName,
       // WhatsApp specific
-      'whatsapp:image': fullImage,
+      'whatsapp:image': secureImageUrl,
       // Facebook specific
       'fb:app_id': process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || '',
       // Twitter specific
@@ -94,14 +98,8 @@ export function generateSEOMetadata(config: SEOConfig): Metadata {
       siteName: DEFAULT_CONFIG.siteName,
       images: [
         {
-          url: fullImage,
-          width: 1200,
-          height: 630,
-          alt: title,
-          type: 'image/png',
-        },
-        {
-          url: fullImage,
+          url: secureImageUrl,
+          secureUrl: secureImageUrl,
           width: 1200,
           height: 630,
           alt: title,
@@ -122,7 +120,7 @@ export function generateSEOMetadata(config: SEOConfig): Metadata {
       creator: DEFAULT_CONFIG.twitter,
       title: fullTitle,
       description,
-      images: [fullImage],
+      images: [secureImageUrl],
     },
     robots: {
       index: true,

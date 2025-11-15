@@ -16,6 +16,29 @@ import { getPostBySlug, type Post } from "@/lib/db-actions"
 import { getPostCommentsWithReplies } from "@/lib/comment-actions"
 import { VISIBILITY_TOKEN_STORAGE_KEY } from "@/components/comment-section"
 
+// Helper function to extract YouTube video ID from various URL formats
+function getYouTubeVideoId(url: string): string | null {
+  if (!url) return null
+  
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\?\/]+)/,
+    /^([a-zA-Z0-9_-]{11})$/ // Direct video ID
+  ]
+  
+  for (const pattern of patterns) {
+    const match = url.match(pattern)
+    if (match && match[1]) return match[1]
+  }
+  
+  return null
+}
+
+// Helper function to check if URL is a YouTube link
+function isYouTubeUrl(url: string): boolean {
+  if (!url) return false
+  return url.includes('youtube.com') || url.includes('youtu.be') || /^[a-zA-Z0-9_-]{11}$/.test(url)
+}
+
 interface BlogPostClientProps {
   slug: string
 }
@@ -125,14 +148,25 @@ export function BlogPostClient({ slug }: BlogPostClientProps) {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="mb-12 rounded-xl overflow-hidden shadow-xl"
           >
-            <Image
-              src={post.imageUrl || "/placeholder.svg"}
-              alt={post.title}
-              width={800}
-              height={400}
-              className="w-full h-auto object-cover"
-              priority
-            />
+            {isYouTubeUrl(post.imageUrl) ? (
+              <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                <iframe
+                  src={`https://www.youtube.com/embed/${getYouTubeVideoId(post.imageUrl)}`}
+                  className="absolute top-0 left-0 w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            ) : (
+              <Image
+                src={post.imageUrl || "/placeholder.svg"}
+                alt={post.title}
+                width={800}
+                height={400}
+                className="w-full h-auto object-cover"
+                priority
+              />
+            )}
           </motion.div>
         )}
 
@@ -140,10 +174,21 @@ export function BlogPostClient({ slug }: BlogPostClientProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="prose prose-lg max-w-none mb-16"
+          className="prose prose-lg max-w-none mb-16 
+            prose-headings:text-gray-900 
+            prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6
+            prose-a:text-theme-primary prose-a:no-underline hover:prose-a:underline
+            prose-strong:text-gray-900 prose-strong:font-semibold
+            prose-ul:list-disc prose-ul:pl-6 prose-ul:mb-6
+            prose-ol:list-decimal prose-ol:pl-6 prose-ol:mb-6
+            prose-li:text-gray-700 prose-li:mb-2
+            prose-blockquote:border-l-4 prose-blockquote:border-theme-primary prose-blockquote:pl-4 prose-blockquote:italic
+            prose-img:rounded-lg prose-img:shadow-lg prose-img:my-8
+            prose-code:bg-gray-100 prose-code:px-2 prose-code:py-1 prose-code:rounded
+            [&_iframe]:rounded-lg [&_iframe]:shadow-lg [&_iframe]:my-8 [&_iframe]:mx-auto"
         >
           {post.richContent ? (
-            <div className="text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: post.richContent }} />
+            <div dangerouslySetInnerHTML={{ __html: post.richContent }} />
           ) : (
             post.content.split("\n\n").map((paragraph, idx) => (
               <p key={idx} className="text-lg text-gray-700 leading-relaxed mb-6 text-balance">

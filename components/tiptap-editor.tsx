@@ -33,15 +33,38 @@ export function TiptapEditor({ value, onChange }: TiptapEditorProps) {
         heading: {
           levels: [2, 3],
         },
+        paragraph: {
+          HTMLAttributes: {
+            class: 'mb-4',
+          },
+        },
+        bulletList: {
+          HTMLAttributes: {
+            class: 'list-disc pl-6 mb-4',
+          },
+        },
+        orderedList: {
+          HTMLAttributes: {
+            class: 'list-decimal pl-6 mb-4',
+          },
+        },
+        listItem: {
+          HTMLAttributes: {
+            class: 'mb-2',
+          },
+        },
       }),
       Link.configure({
         openOnClick: false,
+        HTMLAttributes: {
+          class: 'text-blue-600 hover:underline',
+        },
       }),
       Image.configure({
         allowBase64: true,
         inline: true,
         HTMLAttributes: {
-          class: 'rounded-lg max-w-full h-auto',
+          class: 'rounded-lg max-w-full h-auto my-4',
         },
       }),
       Youtube.configure({

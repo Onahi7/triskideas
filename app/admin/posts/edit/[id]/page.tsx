@@ -71,6 +71,7 @@ export default function EditPostPage() {
         readTimeMinutes: formData.readTimeMinutes,
         featured: formData.featured,
         published: formData.published,
+        publishedAt: formData.published && formData.publishedAt ? new Date(formData.publishedAt) : null,
         seoDescription: formData.seoDescription,
       })
 
@@ -116,11 +117,11 @@ export default function EditPostPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-900 mb-2">Category</label>
                 <Input
-                  value={formData.category}
+                  value={formData.category || ""}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                   placeholder="e.g., Personal Development"
                 />
@@ -130,8 +131,16 @@ export default function EditPostPage() {
                 <Input
                   type="number"
                   min="1"
-                  value={formData.readTimeMinutes}
+                  value={formData.readTimeMinutes || 5}
                   onChange={(e) => setFormData({ ...formData, readTimeMinutes: Number.parseInt(e.target.value) })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-900 mb-2">Publish Date & Time</label>
+                <Input
+                  type="datetime-local"
+                  value={formData.publishedAt ? new Date(formData.publishedAt).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16)}
+                  onChange={(e) => setFormData({ ...formData, publishedAt: new Date(e.target.value) })}
                 />
               </div>
             </div>
